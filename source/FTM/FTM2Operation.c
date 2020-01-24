@@ -71,6 +71,7 @@ void FTM_LED_HANDLER(void)
 
 void Ftm2Task(void *pvParameters)
 {
+	uint8_t changeFlag = 0;
     ftm_pwm_level_select_t pwmLevel = kFTM_LowTrue;
     ftm_chnl_pwm_signal_param_t ftmParam;
 
@@ -83,40 +84,46 @@ void Ftm2Task(void *pvParameters)
     PRINTF("ftm2 task started\r\n");
 	FTM_DisableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
     FTM_SetupPwm(BOARD_FTM_BASEADDR, &ftmParam, 1U, kFTM_CenterAlignedPwm, 24000U, FTM_SOURCE_CLOCK);
-	FTM_EnableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
+//	FTM_EnableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
 
     FTM_StartTimer(BOARD_FTM_BASEADDR, kFTM_SystemClock);
 
 	while(1)
 	{
-		/* Use interrupt to update the PWM dutycycle */
-		if (true == ftmIsrFlag)
+		xResult = xTaskNotifyWait( 0x00,    /* Don't clear bits on entry. */
+				0xffffffff,        /* Clear all bits on exit. */
+				&notifyData.notifyBits, /* Stores the notified value. */
+				xMaxBlockTime );
+
+		if( xResult == pdPASS )
 		{
-			/* Disable interrupt to retain current dutycycle for a few seconds */
-			FTM_DisableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
+			SEGGER_RTT_printf(0,"debug %d\r\n",notifyData.notifyBits);
+		}
 
-			ftmIsrFlag = false;
+		{
+			if( changeFlag )
+			{
+				changeFlag = 0;
+				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, BOARD_FTM_CHANNEL, 0U);
 
-			/* Disable channel output before updating the dutycycle */
-			FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, BOARD_FTM_CHANNEL, 0U);
+				/* Update PWM duty cycle */
+				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, BOARD_FTM_CHANNEL, kFTM_CenterAlignedPwm, updatedDutycycle);
 
-			/* Update PWM duty cycle */
-			FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, BOARD_FTM_CHANNEL, kFTM_CenterAlignedPwm, updatedDutycycle);
+				/* Software trigger to update registers */
+				FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
 
-			/* Software trigger to update registers */
-			FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
-
-			/* Start channel output with updated dutycycle */
-			FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, BOARD_FTM_CHANNEL, pwmLevel);
-
-			/* Delay to view the updated PWM dutycycle */
-			vTaskDelay(10);
-
-			/* Enable interrupt flag to update PWM dutycycle */
-			FTM_EnableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
+				/* Start channel output with updated dutycycle */
+				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, BOARD_FTM_CHANNEL, pwmLevel);
+			}
+			vTaskDelay(100);
 		}
 
 	}
+}
+
+TaskHandle_t GetFtm2TaskHandle()
+{
+	return tl_Ftm2TaskHandlerId;
 }
 
 void StartFtm2Task()
