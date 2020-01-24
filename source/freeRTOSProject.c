@@ -72,9 +72,9 @@ static void trigger_task(void *pvParameters)
 {
 	for(;;)
 	{
-		xTaskNotify(tl_HelloTaskHandlerId,0xFFFF,eSetBits);
+//		xTaskNotify(tl_HelloTaskHandlerId,0xFFFF,eSetBits);
 
-		xTaskNotify(GetDebugdTaskHandle(),0xFFFF,eSetBits);
+//		xTaskNotify(GetDebugdTaskHandle(),0xFFFF,eSetBits);
 
 		vTaskDelay(1000);
 	}

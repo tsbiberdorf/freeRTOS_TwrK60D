@@ -50,6 +50,8 @@ extern "C" {
 #define FTM2_CLOCK_SOURCE CLOCK_GetFreq(kCLOCK_BusClk)
 /* FTM2 interrupt vector ID (number). */
 #define FTM2_IRQN FTM2_IRQn
+/* FTM2 interrupt vector priority. */
+#define FTM2_IRQ_PRIORITY 5
 /* FTM2 interrupt handler identifier. */
 #define FTM2_IRQHANDLER FTM2_IRQHandler
 

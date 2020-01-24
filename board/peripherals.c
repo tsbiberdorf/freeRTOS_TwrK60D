@@ -202,14 +202,13 @@ instance:
       - chnlPolarity: ''
       - useGlobalTimeBase: 'false'
     - timer_interrupts: ''
-    - enable_irq: 'false'
+    - enable_irq: 'true'
     - ftm_interrupt:
       - IRQn: 'FTM2_IRQn'
-      - enable_priority: 'false'
-      - priority: '0'
+      - enable_priority: 'true'
+      - priority: '5'
       - enable_custom_name: 'false'
-    - EnableTimerInInit: 'true'
-    - quick_selection: 'QuickSelectionDefault'
+    - EnableTimerInInit: 'false'
   - ftm_center_aligned_mode:
     - ftm_center_aligned_channels_config: []
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
@@ -232,7 +231,10 @@ const ftm_config_t FTM2_config = {
 void FTM2_init(void) {
   FTM_Init(FTM2_PERIPHERAL, &FTM2_config);
   FTM_SetTimerPeriod(FTM2_PERIPHERAL, ((FTM2_CLOCK_SOURCE/ (1U << (FTM2_PERIPHERAL->SC & FTM_SC_PS_MASK))) / (10000 * 2)));
-  FTM_StartTimer(FTM2_PERIPHERAL, kFTM_SystemClock);
+  /* Interrupt vector FTM2_IRQn priority settings in the NVIC */
+  NVIC_SetPriority(FTM2_IRQN, FTM2_IRQ_PRIORITY);
+  /* Enable interrupt FTM2_IRQn request in the NVIC */
+  EnableIRQ(FTM2_IRQN);
 }
 
 /***********************************************************************************************************************

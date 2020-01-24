@@ -382,7 +382,7 @@
                      </config_set>
                   </instance>
                   <instance name="FTM2" uuid="a4de08b7-0b5e-4608-86ab-88216cb464c1" type="ftm" type_id="ftm_5e037045c21cf6f361184c371dbbbab2" mode="CenterAligned" peripheral="FTM2" enabled="true" comment="" custom_name_enabled="false">
-                     <config_set name="ftm_main_config" quick_selection="QuickSelectionDefault">
+                     <config_set name="ftm_main_config">
                         <struct name="ftm_config">
                            <setting name="clockSource" value="kFTM_SystemClock"/>
                            <setting name="clockSourceFreq" value="GetFreq"/>
@@ -415,14 +415,14 @@
                         <set name="timer_interrupts">
                            <selected/>
                         </set>
-                        <setting name="enable_irq" value="false"/>
+                        <setting name="enable_irq" value="true"/>
                         <struct name="ftm_interrupt">
                            <setting name="IRQn" value="FTM2_IRQn"/>
-                           <setting name="enable_priority" value="false"/>
-                           <setting name="priority" value="0"/>
+                           <setting name="enable_priority" value="true"/>
+                           <setting name="priority" value="5"/>
                            <setting name="enable_custom_name" value="false"/>
                         </struct>
-                        <setting name="EnableTimerInInit" value="true"/>
+                        <setting name="EnableTimerInInit" value="false"/>
                      </config_set>
                      <config_set name="ftm_center_aligned_mode">
                         <array name="ftm_center_aligned_channels_config"/>
