@@ -14,6 +14,8 @@
 #include "TaskParameters.h"
 #include "fsl_debug_console.h"
 
+#include "CMSIS/RTT/SEGGER_RTT.h"
+
 /* The Flextimer instance/channel used for board */
 #define BOARD_FTM_BASEADDR FTM2
 #define BOARD_FTM_CHANNEL kFTM_Chnl_0
@@ -71,9 +73,15 @@ void FTM_LED_HANDLER(void)
 
 void Ftm2Task(void *pvParameters)
 {
+	BaseType_t xResult;
 	uint8_t changeFlag = 0;
     ftm_pwm_level_select_t pwmLevel = kFTM_LowTrue;
     ftm_chnl_pwm_signal_param_t ftmParam;
+	union _Long_Char_Join
+	{
+		uint32_t notifyBits;
+		char notityBytes[4];
+	} notifyData;
 
     /* Configure ftm params with frequency 24kHZ */
     ftmParam.chnlNumber = BOARD_FTM_CHANNEL;
@@ -93,7 +101,7 @@ void Ftm2Task(void *pvParameters)
 		xResult = xTaskNotifyWait( 0x00,    /* Don't clear bits on entry. */
 				0xffffffff,        /* Clear all bits on exit. */
 				&notifyData.notifyBits, /* Stores the notified value. */
-				xMaxBlockTime );
+				portMAX_DELAY );
 
 		if( xResult == pdPASS )
 		{
