@@ -33,7 +33,7 @@ static TaskHandle_t  tl_Ftm2TaskHandlerId = NULL;
  ******************************************************************************/
 volatile bool ftmIsrFlag = false;
 volatile bool brightnessUp = true; /* Indicate LED is brighter or dimmer */
-volatile uint8_t updatedDutycycle = 10U;
+volatile uint8_t updatedDutycycle = 1U;
 
 /* Get source clock for FTM driver */
 #define FTM_SOURCE_CLOCK CLOCK_GetFreq(kCLOCK_BusClk)
@@ -77,6 +77,7 @@ void Ftm2Task(void *pvParameters)
 	uint8_t changeFlag = 0;
     ftm_pwm_level_select_t pwmLevel = kFTM_LowTrue;
     ftm_chnl_pwm_signal_param_t ftmParam;
+    ftm_pwm_sync_method_t syncMethod = kFTM_SoftwareTrigger;
 	union _Long_Char_Join
 	{
 		uint32_t notifyBits;
@@ -89,10 +90,36 @@ void Ftm2Task(void *pvParameters)
     ftmParam.dutyCyclePercent = updatedDutycycle;
     ftmParam.firstEdgeDelayPercent = 0U;
 
+    ftm_chnl_t pwmChA = kFTM_Chnl_0;
+    ftm_chnl_t pwmChB = kFTM_Chnl_1;
     PRINTF("ftm2 task started\r\n");
 	FTM_DisableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
     FTM_SetupPwm(BOARD_FTM_BASEADDR, &ftmParam, 1U, kFTM_CenterAlignedPwm, 24000U, FTM_SOURCE_CLOCK);
 //	FTM_EnableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
+
+    /*
+     * sync channels 0/1
+     * combine channels 0/1
+     * make channels 0/1 a complement of each other
+     * enable deadtime on channels 0/1
+     */
+    BOARD_FTM_BASEADDR->COMBINE |= (FTM_COMBINE_COMBINE0_MASK|FTM_COMBINE_COMP0_MASK
+    		|FTM_COMBINE_SYNCEN0_MASK|FTM_COMBINE_DTEN0_MASK);
+
+	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChA, 0U);
+	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChB, 0U);
+
+	/* Update PWM duty cycle */
+	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChA, kFTM_CenterAlignedPwm, updatedDutycycle);
+	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChB, kFTM_CenterAlignedPwm, updatedDutycycle);
+
+	/* Software trigger to update registers */
+	FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
+
+	/* Start channel output with updated dutycycle */
+	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChA, pwmLevel);
+	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChB, pwmLevel);
+
 
     FTM_StartTimer(BOARD_FTM_BASEADDR, kFTM_SystemClock);
 
@@ -105,7 +132,22 @@ void Ftm2Task(void *pvParameters)
 
 		if( xResult == pdPASS )
 		{
-			SEGGER_RTT_printf(0,"debug %d\r\n",notifyData.notifyBits);
+			SEGGER_RTT_printf(0,"pwm bits %d %d\r\n",notifyData.notityBytes[0],notifyData.notityBytes[1]);
+			switch(notifyData.notityBytes[0])
+			{
+			case 0:
+				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChA, 0U);
+				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChA, kFTM_CenterAlignedPwm, notifyData.notityBytes[1]);
+				FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
+				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChA, pwmLevel);
+				break;
+			case 1:
+				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChB, 0U);
+				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChB, kFTM_CenterAlignedPwm, notifyData.notityBytes[1]);
+				FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
+				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChB, pwmLevel);
+				break;
+			}
 		}
 
 		{
