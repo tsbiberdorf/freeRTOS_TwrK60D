@@ -197,8 +197,8 @@ void getInputPinConfiguration(char *CurrentConfigurationPtr,size_t *Size)
 	const char *pinConfigStr12 ="off\r\n";
 	const char *pinConfigStr13 ="test Count: ";
 
-	GPIO_TogglePinsOutput(GPIOC,LED2);
-	GPIO_SetPinsOutput(GPIOC,LED1);
+//	GPIO_TogglePinsOutput(GPIOC,LED2);
+//	GPIO_SetPinsOutput(GPIOC,LED1);
 	uint16_t currentPin1TestCount = 0;
 
 	uint16_t pin1TestCount;

@@ -5,10 +5,12 @@
  *      Author: TBiberdorf
  */
 
+#include <stdio.h>
 #include "FreeRTOS.h"
 #include "task.h"
 #include "MK60D10.h"
 #include "fsl_uart.h"
+#include "freeRTOSProject.h"
 
 #include "fsl_debug_console.h"
 #include "fsl_port.h"
@@ -36,8 +38,8 @@ static void LedTask(void *pvParameters)
 	const TickType_t xMaxBlockTime = pdMS_TO_TICKS( 10 );
 	BaseType_t xResult;
 	SEGGER_RTT_printf(0,"LED Task started\r\n");
-	TaskHandle_t  ledTaskHandlerId = tl_LEDTaskHandlerId;
 
+	PRINTF("LED Task Started\r\n");
 	while(1)
 	{
 //		tl_LEDTaskHandlerId = ledTaskHandlerId;
@@ -48,9 +50,59 @@ static void LedTask(void *pvParameters)
 
 		if( xResult == pdPASS )
 		{
-			SEGGER_RTT_printf(0,"led %d\r\n",notifyBits);
-			interruptFlag = 1;
-			GPIO_SetPinsOutput(GPIOC,LED3);
+			if( notifyBits & LED_RED_ON)
+			{
+#if (BOARD_HW == MP8000_HW)
+				GPIO_SetPinsOutput(BOARD_INITPINS_RedLED_GPIO,1<<BOARD_INITPINS_RedLED_PIN);
+#elif (BOARD_HW == TWR_K60_HW)
+#else
+#endif
+			}
+			if( notifyBits & LED_RED_OFF)
+			{
+#if (BOARD_HW == MP8000_HW)
+				GPIO_ClearPinsOutput(BOARD_INITPINS_RedLED_GPIO,1<<BOARD_INITPINS_RedLED_PIN);
+#elif (BOARD_HW == TWR_K60)
+#else
+#endif
+			}
+			if( notifyBits & GREEN_RED_ON)
+			{
+#if (BOARD_HW == MP8000_HW)
+				GPIO_SetPinsOutput(BOARD_INITPINS_GreenLED_GPIO,1<<BOARD_INITPINS_GreenLED_PIN);
+#elif (BOARD_HW == TWR_K60)
+#else
+#endif
+			}
+			if( notifyBits & GREEN_RED_OFF)
+			{
+#if (BOARD_HW == MP8000_HW)
+				GPIO_ClearPinsOutput(BOARD_INITPINS_GreenLED_GPIO,1<<BOARD_INITPINS_GreenLED_PIN);
+#elif (BOARD_HW == TWR_K60)
+#else
+#endif
+			}
+			if( notifyBits & BLUE_RED_ON)
+			{
+#if (BOARD_HW == MP8000_HW)
+				GPIO_SetPinsOutput(BOARD_INITPINS_BlueLED_GPIO,1<<BOARD_INITPINS_BlueLED_PIN);
+#elif (BOARD_HW == TWR_K60)
+#else
+#endif
+			}
+			if( notifyBits & BLUE_RED_OFF)
+			{
+#if (BOARD_HW == MP8000_HW)
+				GPIO_ClearPinsOutput(BOARD_INITPINS_BlueLED_GPIO,1<<BOARD_INITPINS_BlueLED_PIN);
+#elif (BOARD_HW == TWR_K60)
+#else
+#endif
+			}
+
+//			SEGGER_RTT_printf(0,"led %d\r\n",notifyBits);
+//			GPIO_TogglePinsOutput(BOARD_INITPINS_RedLED_GPIO,1<<BOARD_INITPINS_RedLED_PIN);
+//			GPIO_TogglePinsOutput(BOARD_INITPINS_GreenLED_GPIO,1<<BOARD_INITPINS_GreenLED_PIN);
+//			GPIO_TogglePinsOutput(BOARD_INITPINS_BlueLED_GPIO,1<<BOARD_INITPINS_BlueLED_PIN);
 		}
 		else
 		{
@@ -62,7 +114,7 @@ static void LedTask(void *pvParameters)
 			{
 				interruptFlag = 0;
 				// flash LED to indicate still alive
-				GPIO_ClearPinsOutput(GPIOC,LED3);
+//				GPIO_ClearPinsOutput(GPIOC,LED3);
 			}
 		}
 
@@ -70,7 +122,7 @@ static void LedTask(void *pvParameters)
 		{
 			ledFlashDelay = 0;
 			// flash LED to indicate still alive
-			GPIO_TogglePinsOutput(GPIOC,LED2);
+//			GPIO_TogglePinsOutput(GPIOC,LED2);
 		}
 
 

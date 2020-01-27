@@ -13,8 +13,10 @@
 #include "task.h"
 #include "../DebugTask.h"
 #include "GPIO/GpiocOperations.h"
+#include "LED/LEDOperations.h"
 #include "freeRTOSProject.h"
 #include "CMSIS/RTT/SEGGER_RTT.h"
+#include "fsl_debug_console.h"
 
 #define CLI_BUFFER_SIZE (256)
 
@@ -99,11 +101,14 @@ static uint8_t * ParseHex(uint8_t *InputStr, uint32_t *PtrHex)
 	return ptrEnd;
 }
 
+/**
+ * @details set up options for a CLI command
+ */
 typedef struct _cliCommandOptions_s
 {
-	const char *option;
-	const uint8_t optionSize;
-	int32_t (*optionCallback)(char *);
+	const char *option; /** text of the option, include '-' */
+	const uint8_t optionSize; /** number of characters in the option text including the '-' character */
+	int32_t (*optionCallback)(char *); /** callback method to call if the option is detected */
 }s_cliCommandOptions_t;
 
 typedef struct _cliCommands_s
@@ -115,7 +120,7 @@ typedef struct _cliCommands_s
 
 static const char *helpCmdText[] = {
 		"NGR help commands:\r\n",
-		"gpio\r\n",
+		"led\r\n",
 		"\0"
 };
 
@@ -139,102 +144,111 @@ s_cliCommandOptions_t helpOptions[]= {
 		{"-h",2,helpCmd},{"-?",2,helpCmd},{NULL,0,helpCmd}
 };
 
-const char *gpioCmdText[] = {
-		"gpio help commands:\r\n",
-		"-p pin select\r\n",
-		"-c current configuration\r\n",
-		"-pp pullup power level {0|1}\r\n",
-		"-pf passive filter on/off {0|1}\r\n",
-		"-af active filter on/off {0|1}\r\n",
-		"-clr clear interrupt count\r\n",
+const char *ledCmdText[] = {
+		"led help commands:\r\n",
+		"-r [0/1] turn Red LED on/off\r\n",
+		"-g [0/1] turn Green LED on/off\r\n",
+		"-b [0/1] turn Blue LED on/off\r\n",
 		"\0"
 };
 
-static int32_t gpioHelpCmd(char *Param)
+static int32_t ledHelpCmd(char *Param)
 {
 	uint16_t helpIdx=0;
 
-	while(gpioCmdText[helpIdx][0])
+	while(ledCmdText[helpIdx][0])
 	{
-		DebugTaskWrite(gpioCmdText[helpIdx],strlen(gpioCmdText[helpIdx]));
+		DebugTaskWrite(ledCmdText[helpIdx],strlen(ledCmdText[helpIdx]));
 		helpIdx++;
 	}
 	return 0;
 }
 
-static int32_t gpioPinConfiguration(char *Param)
+static int32_t ledGreenSelect(char *Param)
 {
-	size_t strSize = CLI_BUFFER_SIZE;
-//	printf("gpio pin configuration \r\n");
-	getInputPinConfiguration((char *)tl_cliData,&strSize);
-
-	DebugTaskWrite((char *)tl_cliData,strSize);
-
+	uint32_t value;
+	PRINTF("led Green ");
+	if( ParseDecimal((uint8_t *)Param,&value) )
+	{
+		if(value)
+		{
+			PRINTF("ON\r\n");
+			xTaskNotify(GetLedTaskHandle(),GREEN_RED_ON,eSetBits);
+		}
+		else
+		{
+			PRINTF("OFF\r\n");
+			xTaskNotify(GetLedTaskHandle(),GREEN_RED_OFF,eSetBits);
+		}
+	}
+	else
+	{
+		PRINTF("\r\n");
+	}
 	return 0;
 }
 
-static int32_t gpioPinSelect(char *Param)
+static int32_t ledRedSelect(char *Param)
 {
-	uint8_t *parseStatus;
-	uint32_t pinSelect;
-
-	parseStatus = ParseDecimal((uint8_t *)Param, &pinSelect);
-	SEGGER_RTT_printf(0,"gpio pin select %d \r\n",pinSelect);
-	setInputPin(pinSelect);
+	uint32_t value;
+	PRINTF("led Red ");
+	if( ParseDecimal((uint8_t *)Param,&value) )
+	{
+		if(value)
+		{
+			PRINTF("ON\r\n");
+			xTaskNotify(GetLedTaskHandle(),LED_RED_ON,eSetBits);
+		}
+		else
+		{
+			PRINTF("OFF\r\n");
+			xTaskNotify(GetLedTaskHandle(),LED_RED_OFF,eSetBits);
+		}
+	}
+	else
+	{
+		PRINTF("\r\n");
+	}
 	return 0;
 }
 
-static int32_t gpioPullupPwrSelect(char *Param)
+static int32_t ledBlueSelect(char *Param)
 {
-	uint8_t *parseStatus;
-	uint32_t pullupPwrSelect;
-
-	parseStatus = ParseDecimal((uint8_t *)Param, &pullupPwrSelect);
-	SEGGER_RTT_printf(0,"gpio pin pullup power select %d\r\n",pullupPwrSelect);
-	setPullupPowerLevel(pullupPwrSelect);
-	return 0;
+	uint32_t value;
+	PRINTF("led Blue");
+	if( ParseDecimal((uint8_t *)Param,&value) )
+	{
+		if(value)
+		{
+			PRINTF("ON\r\n");
+			xTaskNotify(GetLedTaskHandle(),BLUE_RED_ON,eSetBits);
+		}
+		else
+		{
+			PRINTF("OFF\r\n");
+			xTaskNotify(GetLedTaskHandle(),BLUE_RED_OFF,eSetBits);
+		}
+	}
+	else
+	{
+		PRINTF("\r\n");
+	}
+	return 0;	return 0;
 }
 
-static int32_t gpioPassiveFilterSelect(char *Param)
-{
-	uint8_t *parseStatus;
-	uint32_t filterSelect;
+/**
+ * CLI options supported with the command: led
+ */
+s_cliCommandOptions_t ledOptions[]= {
+		{"-g",2,ledGreenSelect},
+		{"-r",2,ledRedSelect},
+		{"-b",2,ledBlueSelect},
 
-	parseStatus = ParseDecimal((uint8_t *)Param, &filterSelect);
-	SEGGER_RTT_printf(0,"gpio pin passive filter select %f\r\n",filterSelect);
-	setPassiveFilter(filterSelect);
-	return 0;
-}
-
-static int32_t gpioActiveFilterSelect(char *Param)
-{
-	uint8_t *parseStatus;
-	uint32_t filterSelect;
-
-	parseStatus = ParseDecimal((uint8_t *)Param, &filterSelect);
-	SEGGER_RTT_printf(0,"gpio pin active filter select %d\r\n",filterSelect);
-	setActiveFilter(filterSelect);
-	return 0;
-}
-static int32_t gpioClearTestCnt(char *Param)
-{
-	gpioClearTestCount();
-	return 0;
-}
-
-s_cliCommandOptions_t gpioOptions[]= {
-		{"-pf",3,gpioPassiveFilterSelect},
-		{"-af",3,gpioActiveFilterSelect},
-		{"-pp",3,gpioPullupPwrSelect},
-		{"-clr",4,gpioClearTestCnt},
-		{"-c",2,gpioPinConfiguration},
-		{"-p",2,gpioPinSelect},
-
-		{"-h",2,gpioHelpCmd},{"-?",2,gpioHelpCmd},{NULL,0,gpioHelpCmd}
+		{"-h",2,ledHelpCmd},{"-?",2,ledHelpCmd},{NULL,0,ledHelpCmd}
 };
 
 s_cliCommands_t userCmds[]= {
-		{"gpio",gpioOptions},
+		{"led",ledOptions},
 		{"help" ,helpOptions},
 		{NULL,NULL}
 };
