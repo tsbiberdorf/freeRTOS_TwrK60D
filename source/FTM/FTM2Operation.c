@@ -75,6 +75,9 @@ void Ftm2Task(void *pvParameters)
 {
 	BaseType_t xResult;
 	uint8_t changeFlag = 0;
+	uint32_t deadTimeDelay = 0;
+
+	ftm_pwm_mode_t alignment = kFTM_CombinedPwm;
     ftm_pwm_level_select_t pwmLevel = kFTM_LowTrue;
     ftm_chnl_pwm_signal_param_t ftmParam;
     ftm_pwm_sync_method_t syncMethod = kFTM_SoftwareTrigger;
@@ -94,7 +97,7 @@ void Ftm2Task(void *pvParameters)
     ftm_chnl_t pwmChB = kFTM_Chnl_1;
     PRINTF("ftm2 task started\r\n");
 	FTM_DisableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
-    FTM_SetupPwm(BOARD_FTM_BASEADDR, &ftmParam, 1U, kFTM_CenterAlignedPwm, 24000U, FTM_SOURCE_CLOCK);
+    FTM_SetupPwm(BOARD_FTM_BASEADDR, &ftmParam, 1U, kFTM_CombinedPwm, 24000U, FTM_SOURCE_CLOCK);
 //	FTM_EnableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
 
     /*
@@ -106,12 +109,17 @@ void Ftm2Task(void *pvParameters)
     BOARD_FTM_BASEADDR->COMBINE |= (FTM_COMBINE_COMBINE0_MASK|FTM_COMBINE_COMP0_MASK
     		|FTM_COMBINE_SYNCEN0_MASK|FTM_COMBINE_DTEN0_MASK);
 
+    /*
+     * deadtime is configured with a pre-scaler and value
+     */
+    deadTimeDelay = 0;
+
 	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChA, 0U);
 	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChB, 0U);
 
 	/* Update PWM duty cycle */
-	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChA, kFTM_CenterAlignedPwm, updatedDutycycle);
-	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChB, kFTM_CenterAlignedPwm, updatedDutycycle);
+	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChA, alignment, updatedDutycycle);
+	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChB, alignment, updatedDutycycle);
 
 	/* Software trigger to update registers */
 	FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
@@ -132,18 +140,23 @@ void Ftm2Task(void *pvParameters)
 
 		if( xResult == pdPASS )
 		{
-			SEGGER_RTT_printf(0,"pwm bits %d %d\r\n",notifyData.notityBytes[0],notifyData.notityBytes[1]);
+			SEGGER_RTT_printf(0,"pwm bits %d %d %d\r\n",
+					notifyData.notityBytes[0],
+					notifyData.notityBytes[1],
+					notifyData.notityBytes[2]);
 			switch(notifyData.notityBytes[0])
 			{
 			case 0:
 				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChA, 0U);
-				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChA, kFTM_CenterAlignedPwm, notifyData.notityBytes[1]);
+				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChA, alignment, notifyData.notityBytes[1]);
 				FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
+				deadTimeDelay = notifyData.notityBytes[2];
+				BOARD_FTM_BASEADDR->DEADTIME = deadTimeDelay;
 				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChA, pwmLevel);
 				break;
 			case 1:
 				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChB, 0U);
-				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChB, kFTM_CenterAlignedPwm, notifyData.notityBytes[1]);
+				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChB, alignment, notifyData.notityBytes[1]);
 				FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
 				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChB, pwmLevel);
 				break;

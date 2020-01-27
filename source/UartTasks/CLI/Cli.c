@@ -259,24 +259,30 @@ static int32_t pwmChannelSetting(char *Param)
 		uint32_t pwmBits;
 		uint8_t pwmBytes[4];
 	} pwmTaskData;
-	uint32_t channel,value;
+	uint32_t channel,value,deadtime;
 	uint8_t *ptrValue;
 	PRINTF("pwm ch: ");
 
 	ptrValue = ParseDecimal((uint8_t *)Param,&channel);
 	if( ptrValue )
 	{
-		if(channel == 0 || channel == 1)
+		if(channel == 0 )
 		{
-			ParseDecimal((uint8_t *)ptrValue,&value);
-			if(value > 99)
+			ptrValue = ParseDecimal((uint8_t *)ptrValue,&value);
+			ptrValue = ParseDecimal((uint8_t *)ptrValue,&deadtime);
+			if(value > 100)
 			{
-				value = 99;
+				value = 100;
 			}
 			pwmTaskData.pwmBytes[0] = (uint8_t)channel;
 			pwmTaskData.pwmBytes[1] = (uint8_t)value;
+			pwmTaskData.pwmBytes[2] = (uint8_t)deadtime;
 			xTaskNotify(GetFtm2TaskHandle(),pwmTaskData.pwmBits,eSetBits);
-			PRINTF("%d %d\r\n",channel,value);
+			PRINTF("%d %d %d\r\n",channel,value,deadtime);
+		}
+		else
+		{
+			PRINTF("n/a %d %d\r\n",value,deadtime);
 		}
 	}
 	else
