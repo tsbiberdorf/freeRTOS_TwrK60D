@@ -10,11 +10,11 @@
  * Included files
  **********************************************************************************************************************/
 #include "fsl_common.h"
-#include "fsl_uart.h"
 #include "fsl_clock.h"
+#include "fsl_ftm.h"
 #include "fsl_gpio.h"
 #include "fsl_port.h"
-#include "fsl_ftm.h"
+#include "fsl_uart.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -24,6 +24,18 @@ extern "C" {
  * Definitions
  **********************************************************************************************************************/
 /* Definitions for BOARD_InitPeripherals functional group */
+/* Definition of peripheral ID */
+#define FTM2_PERIPHERAL FTM2
+/* Definition of the clock source frequency */
+#define FTM2_CLOCK_SOURCE CLOCK_GetFreq(kCLOCK_BusClk)
+/* FTM2 interrupt vector ID (number). */
+#define FTM2_IRQN FTM2_IRQn
+/* FTM2 interrupt vector priority. */
+#define FTM2_IRQ_PRIORITY 5
+/* FTM2 interrupt handler identifier. */
+#define FTM2_IRQHANDLER FTM2_IRQHandler
+/* Alias for GPIOA peripheral */
+#define GPIOA_GPIO GPIOA
 /* Definition of peripheral ID */
 #define UART3_PERIPHERAL UART3
 /* Definition of the clock source frequency */
@@ -42,25 +54,13 @@ extern "C" {
 #define UART5_PERIPHERAL UART5
 /* Definition of the clock source frequency */
 #define UART5_CLOCK_SOURCE CLOCK_GetFreq(UART5_CLK_SRC)
-/* Alias for GPIOA peripheral */
-#define GPIOA_GPIO GPIOA
-/* Definition of peripheral ID */
-#define FTM2_PERIPHERAL FTM2
-/* Definition of the clock source frequency */
-#define FTM2_CLOCK_SOURCE CLOCK_GetFreq(kCLOCK_BusClk)
-/* FTM2 interrupt vector ID (number). */
-#define FTM2_IRQN FTM2_IRQn
-/* FTM2 interrupt vector priority. */
-#define FTM2_IRQ_PRIORITY 5
-/* FTM2 interrupt handler identifier. */
-#define FTM2_IRQHANDLER FTM2_IRQHandler
 
 /***********************************************************************************************************************
  * Global variables
  **********************************************************************************************************************/
+extern const ftm_config_t FTM2_config;
 extern const uart_config_t UART3_config;
 extern const uart_config_t UART5_config;
-extern const ftm_config_t FTM2_config;
 
 /***********************************************************************************************************************
  * Initialization functions

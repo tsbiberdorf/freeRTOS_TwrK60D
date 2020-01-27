@@ -27,11 +27,17 @@ void BOARD_InitBootPins(void);
 
 #define SOPT4_FTM2CH0SRC_FTM 0x00u /*!<@brief FTM2 channel 0 input capture source select: FTM2_CH0 signal */
 
-/*! @name PORTA10 (coord M9), PWM_2
+/*! @name PORTA10 (coord M9), PWM_2ch0
   @{ */
-#define BOARD_INITPINS_PWM_2_PORT PORTA /*!<@brief PORT device name: PORTA */
-#define BOARD_INITPINS_PWM_2_PIN 10U    /*!<@brief PORTA pin index: 10 */
-                                        /* @} */
+#define BOARD_INITPINS_PWM_2ch0_PORT PORTA /*!<@brief PORT device name: PORTA */
+#define BOARD_INITPINS_PWM_2ch0_PIN 10U    /*!<@brief PORTA pin index: 10 */
+                                           /* @} */
+
+/*! @name PORTA11 (coord L9), PWM_2ch1
+  @{ */
+#define BOARD_INITPINS_PWM_2ch1_PORT PORTA /*!<@brief PORT device name: PORTA */
+#define BOARD_INITPINS_PWM_2ch1_PIN 11U    /*!<@brief PORTA pin index: 11 */
+                                           /* @} */
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.

@@ -42,6 +42,102 @@ component:
  * BOARD_InitPeripherals functional group
  **********************************************************************************************************************/
 /***********************************************************************************************************************
+ * FTM2 initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'FTM2'
+- type: 'ftm'
+- mode: 'CenterAligned'
+- custom_name_enabled: 'false'
+- type_id: 'ftm_5e037045c21cf6f361184c371dbbbab2'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'FTM2'
+- config_sets:
+  - ftm_main_config:
+    - ftm_config:
+      - clockSource: 'kFTM_SystemClock'
+      - clockSourceFreq: 'GetFreq'
+      - prescale: 'kFTM_Prescale_Divide_1'
+      - timerFrequency: '10000'
+      - bdmMode: 'kFTM_BdmMode_0'
+      - pwmSyncMode: 'kFTM_SoftwareTrigger'
+      - reloadPoints: ''
+      - faultMode: 'kFTM_Fault_Disable'
+      - faultFilterValue: '0'
+      - deadTimePrescale: 'kFTM_Deadtime_Prescale_1'
+      - deadTimeValue: '0'
+      - extTriggers: ''
+      - chnlInitState: ''
+      - chnlPolarity: ''
+      - useGlobalTimeBase: 'false'
+    - timer_interrupts: ''
+    - enable_irq: 'true'
+    - ftm_interrupt:
+      - IRQn: 'FTM2_IRQn'
+      - enable_priority: 'true'
+      - priority: '5'
+      - enable_custom_name: 'false'
+    - EnableTimerInInit: 'false'
+  - ftm_center_aligned_mode:
+    - ftm_center_aligned_channels_config: []
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+const ftm_config_t FTM2_config = {
+  .prescale = kFTM_Prescale_Divide_1,
+  .bdmMode = kFTM_BdmMode_0,
+  .pwmSyncMode = kFTM_SoftwareTrigger,
+  .reloadPoints = 0,
+  .faultMode = kFTM_Fault_Disable,
+  .faultFilterValue = 0,
+  .deadTimePrescale = kFTM_Deadtime_Prescale_1,
+  .deadTimeValue = 0,
+  .extTriggers = 0,
+  .chnlInitState = 0,
+  .chnlPolarity = 0,
+  .useGlobalTimeBase = false
+};
+
+void FTM2_init(void) {
+  FTM_Init(FTM2_PERIPHERAL, &FTM2_config);
+  FTM_SetTimerPeriod(FTM2_PERIPHERAL, ((FTM2_CLOCK_SOURCE/ (1U << (FTM2_PERIPHERAL->SC & FTM_SC_PS_MASK))) / (10000 * 2)));
+  /* Interrupt vector FTM2_IRQn priority settings in the NVIC */
+  NVIC_SetPriority(FTM2_IRQN, FTM2_IRQ_PRIORITY);
+  /* Enable interrupt FTM2_IRQn request in the NVIC */
+  EnableIRQ(FTM2_IRQN);
+}
+
+/***********************************************************************************************************************
+ * GPIOA initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'GPIOA'
+- type: 'gpio'
+- mode: 'GPIO'
+- custom_name_enabled: 'false'
+- type_id: 'gpio_65d133e8884c2b67e1400b2f76d174b8'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'GPIOA'
+- config_sets:
+  - fsl_gpio:
+    - enable_irq: 'false'
+    - port_interrupt:
+      - IRQn: 'PORTA_IRQn'
+      - enable_priority: 'false'
+      - priority: '0'
+      - enable_custom_name: 'false'
+    - quick_selection: 'QS_GPIO_1'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+
+void GPIOA_init(void) {
+  /* Make sure, the clock gate for port A is enabled (e. g. in pin_mux.c) */
+}
+
+/***********************************************************************************************************************
  * UART3 initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -142,111 +238,15 @@ void UART5_init(void) {
 }
 
 /***********************************************************************************************************************
- * GPIOA initialization code
- **********************************************************************************************************************/
-/* clang-format off */
-/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-instance:
-- name: 'GPIOA'
-- type: 'gpio'
-- mode: 'GPIO'
-- custom_name_enabled: 'false'
-- type_id: 'gpio_65d133e8884c2b67e1400b2f76d174b8'
-- functional_group: 'BOARD_InitPeripherals'
-- peripheral: 'GPIOA'
-- config_sets:
-  - fsl_gpio:
-    - enable_irq: 'false'
-    - port_interrupt:
-      - IRQn: 'PORTA_IRQn'
-      - enable_priority: 'false'
-      - priority: '0'
-      - enable_custom_name: 'false'
-    - quick_selection: 'QS_GPIO_1'
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
-/* clang-format on */
-
-void GPIOA_init(void) {
-  /* Make sure, the clock gate for port A is enabled (e. g. in pin_mux.c) */
-}
-
-/***********************************************************************************************************************
- * FTM2 initialization code
- **********************************************************************************************************************/
-/* clang-format off */
-/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-instance:
-- name: 'FTM2'
-- type: 'ftm'
-- mode: 'CenterAligned'
-- custom_name_enabled: 'false'
-- type_id: 'ftm_5e037045c21cf6f361184c371dbbbab2'
-- functional_group: 'BOARD_InitPeripherals'
-- peripheral: 'FTM2'
-- config_sets:
-  - ftm_main_config:
-    - ftm_config:
-      - clockSource: 'kFTM_SystemClock'
-      - clockSourceFreq: 'GetFreq'
-      - prescale: 'kFTM_Prescale_Divide_1'
-      - timerFrequency: '10000'
-      - bdmMode: 'kFTM_BdmMode_0'
-      - pwmSyncMode: 'kFTM_SoftwareTrigger'
-      - reloadPoints: ''
-      - faultMode: 'kFTM_Fault_Disable'
-      - faultFilterValue: '0'
-      - deadTimePrescale: 'kFTM_Deadtime_Prescale_1'
-      - deadTimeValue: '0'
-      - extTriggers: ''
-      - chnlInitState: ''
-      - chnlPolarity: ''
-      - useGlobalTimeBase: 'false'
-    - timer_interrupts: ''
-    - enable_irq: 'true'
-    - ftm_interrupt:
-      - IRQn: 'FTM2_IRQn'
-      - enable_priority: 'true'
-      - priority: '5'
-      - enable_custom_name: 'false'
-    - EnableTimerInInit: 'false'
-  - ftm_center_aligned_mode:
-    - ftm_center_aligned_channels_config: []
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
-/* clang-format on */
-const ftm_config_t FTM2_config = {
-  .prescale = kFTM_Prescale_Divide_1,
-  .bdmMode = kFTM_BdmMode_0,
-  .pwmSyncMode = kFTM_SoftwareTrigger,
-  .reloadPoints = 0,
-  .faultMode = kFTM_Fault_Disable,
-  .faultFilterValue = 0,
-  .deadTimePrescale = kFTM_Deadtime_Prescale_1,
-  .deadTimeValue = 0,
-  .extTriggers = 0,
-  .chnlInitState = 0,
-  .chnlPolarity = 0,
-  .useGlobalTimeBase = false
-};
-
-void FTM2_init(void) {
-  FTM_Init(FTM2_PERIPHERAL, &FTM2_config);
-  FTM_SetTimerPeriod(FTM2_PERIPHERAL, ((FTM2_CLOCK_SOURCE/ (1U << (FTM2_PERIPHERAL->SC & FTM_SC_PS_MASK))) / (10000 * 2)));
-  /* Interrupt vector FTM2_IRQn priority settings in the NVIC */
-  NVIC_SetPriority(FTM2_IRQN, FTM2_IRQ_PRIORITY);
-  /* Enable interrupt FTM2_IRQn request in the NVIC */
-  EnableIRQ(FTM2_IRQN);
-}
-
-/***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/
 void BOARD_InitPeripherals(void)
 {
   /* Initialize components */
+  FTM2_init();
+  GPIOA_init();
   UART3_init();
   UART5_init();
-  GPIOA_init();
-  FTM2_init();
 }
 
 /***********************************************************************************************************************

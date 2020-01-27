@@ -14,7 +14,8 @@ mcu_data: ksdk2_0
 processor_version: 7.0.1
 pin_labels:
 - {pin_num: A1, pin_signal: PTD7/CMT_IRO/UART0_TX/FTM0_CH7/FTM0_FLT1, label: PWM_1, identifier: PWD_1;PWM_1}
-- {pin_num: M9, pin_signal: PTA10/FTM2_CH0/MII0_RXD2/FTM2_QD_PHA/TRACE_D0, label: PWM_2, identifier: PWM_2}
+- {pin_num: M9, pin_signal: PTA10/FTM2_CH0/MII0_RXD2/FTM2_QD_PHA/TRACE_D0, label: PWM_2ch0, identifier: PWM_2;PWM_2ch0}
+- {pin_num: L9, pin_signal: PTA11/FTM2_CH1/MII0_RXCLK/FTM2_QD_PHB, label: PWM_2ch1, identifier: PWM_2ch1}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -44,7 +45,8 @@ BOARD_InitPins:
   - {pin_num: F2, peripheral: UART5, signal: RX, pin_signal: PTE9/I2S0_TXD1/UART5_RX/I2S0_RX_BCLK}
   - {pin_num: E11, peripheral: UART3, signal: TX, pin_signal: ADC1_SE15/PTB11/SPI1_SCK/UART3_TX/FB_AD18/FTM0_FLT2}
   - {pin_num: E12, peripheral: UART3, signal: RX, pin_signal: ADC1_SE14/PTB10/SPI1_PCS0/UART3_RX/FB_AD19/FTM0_FLT1}
-  - {pin_num: M9, peripheral: FTM2, signal: 'CH, 0', pin_signal: PTA10/FTM2_CH0/MII0_RXD2/FTM2_QD_PHA/TRACE_D0, direction: OUTPUT}
+  - {pin_num: M9, peripheral: FTM2, signal: 'CH, 0', pin_signal: PTA10/FTM2_CH0/MII0_RXD2/FTM2_QD_PHA/TRACE_D0, identifier: PWM_2ch0, direction: OUTPUT}
+  - {pin_num: L9, peripheral: FTM2, signal: 'CH, 1', pin_signal: PTA11/FTM2_CH1/MII0_RXCLK/FTM2_QD_PHB, direction: OUTPUT}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -65,7 +67,10 @@ void BOARD_InitPins(void)
     CLOCK_EnableClock(kCLOCK_PortE);
 
     /* PORTA10 (pin M9) is configured as FTM2_CH0 */
-    PORT_SetPinMux(BOARD_INITPINS_PWM_2_PORT, BOARD_INITPINS_PWM_2_PIN, kPORT_MuxAlt3);
+    PORT_SetPinMux(BOARD_INITPINS_PWM_2ch0_PORT, BOARD_INITPINS_PWM_2ch0_PIN, kPORT_MuxAlt3);
+
+    /* PORTA11 (pin L9) is configured as FTM2_CH1 */
+    PORT_SetPinMux(BOARD_INITPINS_PWM_2ch1_PORT, BOARD_INITPINS_PWM_2ch1_PIN, kPORT_MuxAlt3);
 
     /* PORTB10 (pin E12) is configured as UART3_RX */
     PORT_SetPinMux(PORTB, 10U, kPORT_MuxAlt3);
