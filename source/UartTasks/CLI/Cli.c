@@ -23,6 +23,7 @@
 static uint8_t tl_cliData[CLI_BUFFER_SIZE];
 static uint16_t tl_cliIdx = 0;
 
+extern TaskHandle_t GetFtm2TaskHandle();
 
 /*
  * parse InputStr for decimal value.
@@ -121,6 +122,7 @@ typedef struct _cliCommands_s
 static const char *helpCmdText[] = {
 		"NGR help commands:\r\n",
 		"led\r\n",
+		"pwm\r\n",
 		"\0"
 };
 
@@ -247,8 +249,54 @@ s_cliCommandOptions_t ledOptions[]= {
 		{"-h",2,ledHelpCmd},{"-?",2,ledHelpCmd},{NULL,0,ledHelpCmd}
 };
 
+/**
+ * To change the percent of pwm active for the assigned channel
+ */
+static int32_t pwmChannelSetting(char *Param)
+{
+	union _Long_Char_Join
+	{
+		uint32_t pwmBits;
+		uint8_t pwmBytes[4];
+	} pwmTaskData;
+	uint32_t channel,value;
+	uint8_t *ptrValue;
+	PRINTF("pwm ch: ");
+
+	ptrValue = ParseDecimal((uint8_t *)Param,&channel);
+	if( ptrValue )
+	{
+		if(channel == 0 || channel == 1)
+		{
+			ParseDecimal((uint8_t *)ptrValue,&value);
+			if(value > 99)
+			{
+				value = 99;
+			}
+			pwmTaskData.pwmBytes[0] = (uint8_t)channel;
+			pwmTaskData.pwmBytes[1] = (uint8_t)value;
+			xTaskNotify(GetFtm2TaskHandle(),pwmTaskData.pwmBits,eSetBits);
+			PRINTF("%d %d\r\n",channel,value);
+		}
+	}
+	else
+	{
+		PRINTF("\r\n");
+	}
+	return 0;
+
+}
+
+/**
+ *  CLI options supported with the command: pwm
+ */
+s_cliCommandOptions_t pwmOptions[]= {
+		{"-c",2,pwmChannelSetting},
+};
+
 s_cliCommands_t userCmds[]= {
 		{"led",ledOptions},
+		{"pwm",pwmOptions},
 		{"help" ,helpOptions},
 		{NULL,NULL}
 };
@@ -256,13 +304,14 @@ s_cliCommands_t userCmds[]= {
 int32_t LoopOptions(s_cliCommands_t *UserCmdOptions,uint8_t *PtrOption)
 {
 #define MAX_OPTION_SIZE (5) // max size the option field can be
-	char userOption[MAX_OPTION_SIZE],*ptrUserOption;
+	char userOption[MAX_OPTION_SIZE];
+	char *ptrUserOption;
 	int8_t idx;
 	int8_t optionSize=0;
 	int32_t status = -1;
 	int8_t userOptionSize=0;
 
-	ptrUserOption = PtrOption;
+	ptrUserOption = (char *)PtrOption;
 	idx = 0;
 	while( (ptrUserOption[idx] != ' ') && (ptrUserOption[idx] != 0))
 	{

@@ -164,7 +164,7 @@ void DebugTask(void *pvParameters)
 
 		if( xResult == pdPASS )
 		{
-			SEGGER_RTT_printf(0,"debug %d\r\n",notifyData.notifyBits);
+//			SEGGER_RTT_printf(0,"debug %d\r\n",notifyData.notifyBits);
 
 //			while ( !(kUART_TxDataRegEmptyFlag & UART_GetStatusFlags(DEBUG_UART)) )
 //			{
