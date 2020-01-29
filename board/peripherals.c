@@ -42,18 +42,18 @@ component:
  * BOARD_InitPeripherals functional group
  **********************************************************************************************************************/
 /***********************************************************************************************************************
- * FTM2 initialization code
+ * FTM0 initialization code
  **********************************************************************************************************************/
 /* clang-format off */
 /* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 instance:
-- name: 'FTM2'
+- name: 'FTM0'
 - type: 'ftm'
 - mode: 'CenterAligned'
 - custom_name_enabled: 'false'
 - type_id: 'ftm_5e037045c21cf6f361184c371dbbbab2'
 - functional_group: 'BOARD_InitPeripherals'
-- peripheral: 'FTM2'
+- peripheral: 'FTM0'
 - config_sets:
   - ftm_main_config:
     - ftm_config:
@@ -75,16 +75,16 @@ instance:
     - timer_interrupts: ''
     - enable_irq: 'true'
     - ftm_interrupt:
-      - IRQn: 'FTM2_IRQn'
+      - IRQn: 'FTM0_IRQn'
       - enable_priority: 'true'
       - priority: '5'
       - enable_custom_name: 'false'
-    - EnableTimerInInit: 'false'
+    - EnableTimerInInit: 'true'
   - ftm_center_aligned_mode:
     - ftm_center_aligned_channels_config: []
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
-const ftm_config_t FTM2_config = {
+const ftm_config_t FTM0_config = {
   .prescale = kFTM_Prescale_Divide_1,
   .bdmMode = kFTM_BdmMode_0,
   .pwmSyncMode = kFTM_SoftwareTrigger,
@@ -99,13 +99,14 @@ const ftm_config_t FTM2_config = {
   .useGlobalTimeBase = false
 };
 
-void FTM2_init(void) {
-  FTM_Init(FTM2_PERIPHERAL, &FTM2_config);
-  FTM_SetTimerPeriod(FTM2_PERIPHERAL, ((FTM2_CLOCK_SOURCE/ (1U << (FTM2_PERIPHERAL->SC & FTM_SC_PS_MASK))) / (10000 * 2)));
-  /* Interrupt vector FTM2_IRQn priority settings in the NVIC */
-  NVIC_SetPriority(FTM2_IRQN, FTM2_IRQ_PRIORITY);
-  /* Enable interrupt FTM2_IRQn request in the NVIC */
-  EnableIRQ(FTM2_IRQN);
+void FTM0_init(void) {
+  FTM_Init(FTM0_PERIPHERAL, &FTM0_config);
+  FTM_SetTimerPeriod(FTM0_PERIPHERAL, ((FTM0_CLOCK_SOURCE/ (1U << (FTM0_PERIPHERAL->SC & FTM_SC_PS_MASK))) / (10000 * 2)));
+  /* Interrupt vector FTM0_IRQn priority settings in the NVIC */
+  NVIC_SetPriority(FTM0_IRQN, FTM0_IRQ_PRIORITY);
+  /* Enable interrupt FTM0_IRQn request in the NVIC */
+  EnableIRQ(FTM0_IRQN);
+  FTM_StartTimer(FTM0_PERIPHERAL, kFTM_SystemClock);
 }
 
 /***********************************************************************************************************************
@@ -243,7 +244,7 @@ void UART5_init(void) {
 void BOARD_InitPeripherals(void)
 {
   /* Initialize components */
-  FTM2_init();
+  FTM0_init();
   GPIOA_init();
   UART3_init();
   UART5_init();

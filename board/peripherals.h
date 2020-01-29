@@ -25,15 +25,15 @@ extern "C" {
  **********************************************************************************************************************/
 /* Definitions for BOARD_InitPeripherals functional group */
 /* Definition of peripheral ID */
-#define FTM2_PERIPHERAL FTM2
+#define FTM0_PERIPHERAL FTM0
 /* Definition of the clock source frequency */
-#define FTM2_CLOCK_SOURCE CLOCK_GetFreq(kCLOCK_BusClk)
-/* FTM2 interrupt vector ID (number). */
-#define FTM2_IRQN FTM2_IRQn
-/* FTM2 interrupt vector priority. */
-#define FTM2_IRQ_PRIORITY 5
-/* FTM2 interrupt handler identifier. */
-#define FTM2_IRQHANDLER FTM2_IRQHandler
+#define FTM0_CLOCK_SOURCE CLOCK_GetFreq(kCLOCK_BusClk)
+/* FTM0 interrupt vector ID (number). */
+#define FTM0_IRQN FTM0_IRQn
+/* FTM0 interrupt vector priority. */
+#define FTM0_IRQ_PRIORITY 5
+/* FTM0 interrupt handler identifier. */
+#define FTM0_IRQHANDLER FTM0_IRQHandler
 /* Alias for GPIOA peripheral */
 #define GPIOA_GPIO GPIOA
 /* Definition of peripheral ID */
@@ -58,7 +58,7 @@ extern "C" {
 /***********************************************************************************************************************
  * Global variables
  **********************************************************************************************************************/
-extern const ftm_config_t FTM2_config;
+extern const ftm_config_t FTM0_config;
 extern const uart_config_t UART3_config;
 extern const uart_config_t UART5_config;
 

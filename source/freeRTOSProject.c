@@ -39,7 +39,6 @@
 #include "clock_config.h"
 #include "MK60D10.h"
 #include "fsl_debug_console.h"
-#include "FTM/FTM2Operation.h"
 
 /* TODO: insert other include files here. */
 
@@ -57,6 +56,7 @@
 extern void StartDebugTask();
 extern void StartGpioTask();
 extern void StartLedTask();
+extern void StartFtm0Task();
 
 /* Task priorities. */
 #define hello_task_PRIORITY (configMAX_PRIORITIES - 3)
@@ -121,7 +121,7 @@ int main(void) {
     xTaskCreate(hello_task, "Hello_task", configMINIMAL_STACK_SIZE + 10, NULL, hello_task_PRIORITY, &tl_HelloTaskHandlerId);
     xTaskCreate(trigger_task, "triggerHello", configMINIMAL_STACK_SIZE + 10, NULL, hello_task_PRIORITY, NULL);
     StartDebugTask();
-    StartFtm2Task();
+    StartFtm0Task();
 //    xTaskCreate(GpioTask, GpioTaskName, GPIO_TASK_STACK_SIZE , NULL, GPIO_TASK_PRIORITY, NULL);
 //    StartGpioTask();
 

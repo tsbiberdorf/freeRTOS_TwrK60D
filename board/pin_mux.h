@@ -25,19 +25,23 @@ extern "C" {
  */
 void BOARD_InitBootPins(void);
 
-#define SOPT4_FTM2CH0SRC_FTM 0x00u /*!<@brief FTM2 channel 0 input capture source select: FTM2_CH0 signal */
-
-/*! @name PORTA10 (coord M9), PWM_2ch0
+/*! @name PORTC1 (coord B11), HV_PH2
   @{ */
-#define BOARD_INITPINS_PWM_2ch0_PORT PORTA /*!<@brief PORT device name: PORTA */
-#define BOARD_INITPINS_PWM_2ch0_PIN 10U    /*!<@brief PORTA pin index: 10 */
-                                           /* @} */
+#define BOARD_INITPINS_HV_PH2_PORT PORTC /*!<@brief PORT device name: PORTC */
+#define BOARD_INITPINS_HV_PH2_PIN 1U     /*!<@brief PORTC pin index: 1 */
+                                         /* @} */
 
-/*! @name PORTA11 (coord L9), PWM_2ch1
+/*! @name PORTC2 (coord A12), HV_PH1
   @{ */
-#define BOARD_INITPINS_PWM_2ch1_PORT PORTA /*!<@brief PORT device name: PORTA */
-#define BOARD_INITPINS_PWM_2ch1_PIN 11U    /*!<@brief PORTA pin index: 11 */
-                                           /* @} */
+#define BOARD_INITPINS_HV_PH1_PORT PORTC /*!<@brief PORT device name: PORTC */
+#define BOARD_INITPINS_HV_PH1_PIN 2U     /*!<@brief PORTC pin index: 2 */
+                                         /* @} */
+
+/*! @name PORTC3 (coord A11), HV_ENABLE
+  @{ */
+#define BOARD_INITPINS_HV_ENABLE_PORT PORTC /*!<@brief PORT device name: PORTC */
+#define BOARD_INITPINS_HV_ENABLE_PIN 3U     /*!<@brief PORTC pin index: 3 */
+                                            /* @} */
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.

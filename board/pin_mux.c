@@ -16,6 +16,9 @@ pin_labels:
 - {pin_num: A1, pin_signal: PTD7/CMT_IRO/UART0_TX/FTM0_CH7/FTM0_FLT1, label: PWM_1, identifier: PWD_1;PWM_1}
 - {pin_num: M9, pin_signal: PTA10/FTM2_CH0/MII0_RXD2/FTM2_QD_PHA/TRACE_D0, label: PWM_2ch0, identifier: PWM_2;PWM_2ch0}
 - {pin_num: L9, pin_signal: PTA11/FTM2_CH1/MII0_RXCLK/FTM2_QD_PHB, label: PWM_2ch1, identifier: PWM_2ch1}
+- {pin_num: B11, pin_signal: ADC0_SE15/TSI0_CH14/PTC1/LLWU_P6/SPI0_PCS3/UART1_RTS_b/FTM0_CH0/FB_AD13/I2S0_TXD0, label: HV_PH2, identifier: HV_PH2}
+- {pin_num: A12, pin_signal: ADC0_SE4b/CMP1_IN0/TSI0_CH15/PTC2/SPI0_PCS2/UART1_CTS_b/FTM0_CH1/FB_AD12/I2S0_TX_FS, label: HV_PH1, identifier: HV_PH1}
+- {pin_num: A11, pin_signal: CMP1_IN1/PTC3/LLWU_P7/SPI0_PCS1/UART1_RX/FTM0_CH2/CLKOUT/I2S0_TX_BCLK, label: HV_ENABLE, identifier: HV_ENABLE}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -45,8 +48,11 @@ BOARD_InitPins:
   - {pin_num: F2, peripheral: UART5, signal: RX, pin_signal: PTE9/I2S0_TXD1/UART5_RX/I2S0_RX_BCLK}
   - {pin_num: E11, peripheral: UART3, signal: TX, pin_signal: ADC1_SE15/PTB11/SPI1_SCK/UART3_TX/FB_AD18/FTM0_FLT2}
   - {pin_num: E12, peripheral: UART3, signal: RX, pin_signal: ADC1_SE14/PTB10/SPI1_PCS0/UART3_RX/FB_AD19/FTM0_FLT1}
-  - {pin_num: M9, peripheral: FTM2, signal: 'CH, 0', pin_signal: PTA10/FTM2_CH0/MII0_RXD2/FTM2_QD_PHA/TRACE_D0, identifier: PWM_2ch0, direction: OUTPUT}
-  - {pin_num: L9, peripheral: FTM2, signal: 'CH, 1', pin_signal: PTA11/FTM2_CH1/MII0_RXCLK/FTM2_QD_PHB, direction: OUTPUT}
+  - {pin_num: B11, peripheral: FTM0, signal: 'CH, 0', pin_signal: ADC0_SE15/TSI0_CH14/PTC1/LLWU_P6/SPI0_PCS3/UART1_RTS_b/FTM0_CH0/FB_AD13/I2S0_TXD0, direction: OUTPUT,
+    drive_strength: high}
+  - {pin_num: A12, peripheral: FTM0, signal: 'CH, 1', pin_signal: ADC0_SE4b/CMP1_IN0/TSI0_CH15/PTC2/SPI0_PCS2/UART1_CTS_b/FTM0_CH1/FB_AD12/I2S0_TX_FS, direction: OUTPUT,
+    drive_strength: high}
+  - {pin_num: A11, peripheral: FTM0, signal: 'CH, 2', pin_signal: CMP1_IN1/PTC3/LLWU_P7/SPI0_PCS1/UART1_RX/FTM0_CH2/CLKOUT/I2S0_TX_BCLK, direction: OUTPUT, drive_strength: high}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -59,18 +65,12 @@ BOARD_InitPins:
  * END ****************************************************************************************************************/
 void BOARD_InitPins(void)
 {
-    /* Port A Clock Gate Control: Clock enabled */
-    CLOCK_EnableClock(kCLOCK_PortA);
     /* Port B Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortB);
+    /* Port C Clock Gate Control: Clock enabled */
+    CLOCK_EnableClock(kCLOCK_PortC);
     /* Port E Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortE);
-
-    /* PORTA10 (pin M9) is configured as FTM2_CH0 */
-    PORT_SetPinMux(BOARD_INITPINS_PWM_2ch0_PORT, BOARD_INITPINS_PWM_2ch0_PIN, kPORT_MuxAlt3);
-
-    /* PORTA11 (pin L9) is configured as FTM2_CH1 */
-    PORT_SetPinMux(BOARD_INITPINS_PWM_2ch1_PORT, BOARD_INITPINS_PWM_2ch1_PIN, kPORT_MuxAlt3);
 
     /* PORTB10 (pin E12) is configured as UART3_RX */
     PORT_SetPinMux(PORTB, 10U, kPORT_MuxAlt3);
@@ -78,18 +78,44 @@ void BOARD_InitPins(void)
     /* PORTB11 (pin E11) is configured as UART3_TX */
     PORT_SetPinMux(PORTB, 11U, kPORT_MuxAlt3);
 
+    /* PORTC1 (pin B11) is configured as FTM0_CH0 */
+    PORT_SetPinMux(BOARD_INITPINS_HV_PH2_PORT, BOARD_INITPINS_HV_PH2_PIN, kPORT_MuxAlt4);
+
+    PORTC->PCR[1] = ((PORTC->PCR[1] &
+                      /* Mask bits to zero which are setting */
+                      (~(PORT_PCR_DSE_MASK | PORT_PCR_ISF_MASK)))
+
+                     /* Drive Strength Enable: High drive strength is configured on the corresponding pin, if pin
+                      * is configured as a digital output. */
+                     | PORT_PCR_DSE(kPORT_HighDriveStrength));
+
+    /* PORTC2 (pin A12) is configured as FTM0_CH1 */
+    PORT_SetPinMux(BOARD_INITPINS_HV_PH1_PORT, BOARD_INITPINS_HV_PH1_PIN, kPORT_MuxAlt4);
+
+    PORTC->PCR[2] = ((PORTC->PCR[2] &
+                      /* Mask bits to zero which are setting */
+                      (~(PORT_PCR_DSE_MASK | PORT_PCR_ISF_MASK)))
+
+                     /* Drive Strength Enable: High drive strength is configured on the corresponding pin, if pin
+                      * is configured as a digital output. */
+                     | PORT_PCR_DSE(kPORT_HighDriveStrength));
+
+    /* PORTC3 (pin A11) is configured as FTM0_CH2 */
+    PORT_SetPinMux(BOARD_INITPINS_HV_ENABLE_PORT, BOARD_INITPINS_HV_ENABLE_PIN, kPORT_MuxAlt4);
+
+    PORTC->PCR[3] = ((PORTC->PCR[3] &
+                      /* Mask bits to zero which are setting */
+                      (~(PORT_PCR_DSE_MASK | PORT_PCR_ISF_MASK)))
+
+                     /* Drive Strength Enable: High drive strength is configured on the corresponding pin, if pin
+                      * is configured as a digital output. */
+                     | PORT_PCR_DSE(kPORT_HighDriveStrength));
+
     /* PORTE8 (pin F3) is configured as UART5_TX */
     PORT_SetPinMux(PORTE, 8U, kPORT_MuxAlt3);
 
     /* PORTE9 (pin F2) is configured as UART5_RX */
     PORT_SetPinMux(PORTE, 9U, kPORT_MuxAlt3);
-
-    SIM->SOPT4 = ((SIM->SOPT4 &
-                   /* Mask bits to zero which are setting */
-                   (~(SIM_SOPT4_FTM2CH0SRC_MASK)))
-
-                  /* FTM2 channel 0 input capture source select: FTM2_CH0 signal. */
-                  | SIM_SOPT4_FTM2CH0SRC(SOPT4_FTM2CH0SRC_FTM));
 }
 /***********************************************************************************************************************
  * EOF

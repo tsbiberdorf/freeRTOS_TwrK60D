@@ -277,7 +277,7 @@ static int32_t pwmChannelSetting(char *Param)
 			pwmTaskData.pwmBytes[0] = (uint8_t)channel;
 			pwmTaskData.pwmBytes[1] = (uint8_t)value;
 			pwmTaskData.pwmBytes[2] = (uint8_t)deadtime;
-			xTaskNotify(GetFtm2TaskHandle(),pwmTaskData.pwmBits,eSetBits);
+			xTaskNotify(GetFtm0TaskHandle(),pwmTaskData.pwmBits,eSetBits);
 			PRINTF("%d %d %d\r\n",channel,value,deadtime);
 		}
 		else

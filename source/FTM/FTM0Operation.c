@@ -1,9 +1,10 @@
 /*
- * FTM2Operation.c
+ * FTM0Operation.c
  *
- *  Created on: Jan 24, 2020
+ *  Created on: Jan 29, 2020
  *      Author: TBiberdorf
  */
+
 
 #include <stdio.h>
 #include "FreeRTOS.h"
@@ -17,7 +18,7 @@
 #include "CMSIS/RTT/SEGGER_RTT.h"
 
 /* The Flextimer instance/channel used for board */
-#define BOARD_FTM_BASEADDR FTM2
+#define BOARD_FTM_BASEADDR FTM0
 #define BOARD_FTM_CHANNEL kFTM_Chnl_0
 #define FTM_LED_HANDLER FTM2_IRQHandler
 
@@ -26,8 +27,8 @@
 #define FTM_CHANNEL_FLAG kFTM_Chnl0Flag
 
 
-const char *Ftm2TaskName = "FTM2Task";
-static TaskHandle_t  tl_Ftm2TaskHandlerId = NULL;
+const char *Ftm0TaskName = "FTM0Task";
+static TaskHandle_t  tl_Ftm0TaskHandlerId = NULL;
 /*******************************************************************************
  * Variables
  ******************************************************************************/
@@ -71,7 +72,7 @@ void FTM_LED_HANDLER(void)
 }
 
 
-void Ftm2Task(void *pvParameters)
+void Ftm0Task(void *pvParameters)
 {
 	BaseType_t xResult;
 	uint8_t changeFlag = 0;
@@ -80,22 +81,23 @@ void Ftm2Task(void *pvParameters)
 	ftm_pwm_mode_t alignment = kFTM_CombinedPwm;
     ftm_pwm_level_select_t pwmLevel = kFTM_LowTrue;
     ftm_chnl_pwm_signal_param_t ftmParam;
-    ftm_pwm_sync_method_t syncMethod = kFTM_SoftwareTrigger;
 	union _Long_Char_Join
 	{
 		uint32_t notifyBits;
 		char notityBytes[4];
 	} notifyData;
 
+    ftm_chnl_t pwmHV_PH2 = kFTM_Chnl_0;
+    ftm_chnl_t pwmHV_PH1 = kFTM_Chnl_1;
+    ftm_chnl_t pwmHV_ENABLE = kFTM_Chnl_2;
+
     /* Configure ftm params with frequency 24kHZ */
-    ftmParam.chnlNumber = BOARD_FTM_CHANNEL;
+    ftmParam.chnlNumber = pwmHV_PH2;
     ftmParam.level = pwmLevel;
     ftmParam.dutyCyclePercent = updatedDutycycle;
     ftmParam.firstEdgeDelayPercent = 0U;
 
-    ftm_chnl_t pwmChA = kFTM_Chnl_0;
-    ftm_chnl_t pwmChB = kFTM_Chnl_1;
-    PRINTF("ftm2 task started\r\n");
+    PRINTF("ftm0 task started\r\n");
 	FTM_DisableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
     FTM_SetupPwm(BOARD_FTM_BASEADDR, &ftmParam, 1U, kFTM_CombinedPwm, 24000U, FTM_SOURCE_CLOCK);
 //	FTM_EnableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
@@ -114,19 +116,19 @@ void Ftm2Task(void *pvParameters)
      */
     deadTimeDelay = 0;
 
-	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChA, 0U);
-	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChB, 0U);
+	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, 0U);
+	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, 0U);
 
 	/* Update PWM duty cycle */
-	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChA, alignment, updatedDutycycle);
-	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChB, alignment, updatedDutycycle);
+	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH2, alignment, updatedDutycycle);
+	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH1, alignment, updatedDutycycle);
 
 	/* Software trigger to update registers */
 	FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
 
 	/* Start channel output with updated dutycycle */
-	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChA, pwmLevel);
-	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChB, pwmLevel);
+	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, pwmLevel);
+	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, pwmLevel);
 
 
     FTM_StartTimer(BOARD_FTM_BASEADDR, kFTM_SystemClock);
@@ -147,18 +149,18 @@ void Ftm2Task(void *pvParameters)
 			switch(notifyData.notityBytes[0])
 			{
 			case 0:
-				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChA, 0U);
-				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChA, alignment, notifyData.notityBytes[1]);
+				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, 0U);
+				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH2, alignment, notifyData.notityBytes[1]);
 				FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
 				deadTimeDelay = notifyData.notityBytes[2];
 				BOARD_FTM_BASEADDR->DEADTIME = deadTimeDelay;
-				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChA, pwmLevel);
+				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, pwmLevel);
 				break;
 			case 1:
-				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChB, 0U);
-				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmChB, alignment, notifyData.notityBytes[1]);
+				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, 0U);
+				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH1, alignment, notifyData.notityBytes[1]);
 				FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
-				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmChB, pwmLevel);
+				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, pwmLevel);
 				break;
 			}
 		}
@@ -184,13 +186,13 @@ void Ftm2Task(void *pvParameters)
 	}
 }
 
-TaskHandle_t GetFtm2TaskHandle()
+TaskHandle_t GetFtm0TaskHandle()
 {
-	return tl_Ftm2TaskHandlerId;
+	return tl_Ftm0TaskHandlerId;
 }
 
-void StartFtm2Task()
+void StartFtm0Task()
 {
-	xTaskCreate(Ftm2Task, Ftm2TaskName, FTM2_TASK_STACK_SIZE , NULL, FTM2_TASK_PRIORITY, &tl_Ftm2TaskHandlerId);
+	xTaskCreate(Ftm0Task, Ftm0TaskName, FTM0_TASK_STACK_SIZE , NULL, FTM0_TASK_PRIORITY, &tl_Ftm0TaskHandlerId);
 
 }
