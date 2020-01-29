@@ -139,66 +139,6 @@ void GPIOA_init(void) {
 }
 
 /***********************************************************************************************************************
- * UART3 initialization code
- **********************************************************************************************************************/
-/* clang-format off */
-/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-instance:
-- name: 'UART3'
-- type: 'uart'
-- mode: 'interrupts'
-- custom_name_enabled: 'false'
-- type_id: 'uart_c6ca9befff8c3e28c85e70f512c4576e'
-- functional_group: 'BOARD_InitPeripherals'
-- peripheral: 'UART3'
-- config_sets:
-  - uartConfig_t:
-    - uartConfig:
-      - clockSource: 'BusInterfaceClock'
-      - clockSourceFreq: 'GetFreq'
-      - baudRate_Bps: '115200'
-      - parityMode: 'kUART_ParityDisabled'
-      - txFifoWatermark: '0'
-      - rxFifoWatermark: '1'
-      - enableTx: 'true'
-      - enableRx: 'true'
-    - quick_selection: 'QuickSelection1'
-  - interruptsCfg:
-    - interrupts: 'kUART_RxDataRegFullInterruptEnable kUART_RxOverrunInterruptEnable'
-    - interrupt_vectors:
-      - enable_rx_tx_irq: 'true'
-      - interrupt_rx_tx:
-        - IRQn: 'UART3_RX_TX_IRQn'
-        - enable_priority: 'true'
-        - priority: '4'
-        - enable_custom_name: 'false'
-      - enable_err_irq: 'false'
-      - interrupt_err:
-        - IRQn: 'UART3_ERR_IRQn'
-        - enable_priority: 'false'
-        - priority: '0'
-        - enable_custom_name: 'false'
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
-/* clang-format on */
-const uart_config_t UART3_config = {
-  .baudRate_Bps = 115200,
-  .parityMode = kUART_ParityDisabled,
-  .txFifoWatermark = 0,
-  .rxFifoWatermark = 1,
-  .enableTx = true,
-  .enableRx = true
-};
-
-void UART3_init(void) {
-  UART_Init(UART3_PERIPHERAL, &UART3_config, UART3_CLOCK_SOURCE);
-  UART_EnableInterrupts(UART3_PERIPHERAL, kUART_RxDataRegFullInterruptEnable | kUART_RxOverrunInterruptEnable);
-  /* Interrupt vector UART3_RX_TX_IRQn priority settings in the NVIC */
-  NVIC_SetPriority(UART3_SERIAL_RX_TX_IRQN, UART3_SERIAL_RX_TX_IRQ_PRIORITY);
-  /* Enable interrupt UART3_RX_TX_IRQn request in the NVIC */
-  EnableIRQ(UART3_SERIAL_RX_TX_IRQN);
-}
-
-/***********************************************************************************************************************
  * UART5 initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -239,6 +179,66 @@ void UART5_init(void) {
 }
 
 /***********************************************************************************************************************
+ * UART0 initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'UART0'
+- type: 'uart'
+- mode: 'interrupts'
+- custom_name_enabled: 'false'
+- type_id: 'uart_c6ca9befff8c3e28c85e70f512c4576e'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'UART0'
+- config_sets:
+  - uartConfig_t:
+    - uartConfig:
+      - clockSource: 'BusInterfaceClock'
+      - clockSourceFreq: 'GetFreq'
+      - baudRate_Bps: '115200'
+      - parityMode: 'kUART_ParityDisabled'
+      - txFifoWatermark: '0'
+      - rxFifoWatermark: '1'
+      - enableTx: 'true'
+      - enableRx: 'true'
+    - quick_selection: 'QuickSelection1'
+  - interruptsCfg:
+    - interrupts: 'kUART_RxDataRegFullInterruptEnable kUART_RxOverrunInterruptEnable'
+    - interrupt_vectors:
+      - enable_rx_tx_irq: 'true'
+      - interrupt_rx_tx:
+        - IRQn: 'UART0_RX_TX_IRQn'
+        - enable_priority: 'true'
+        - priority: '5'
+        - enable_custom_name: 'false'
+      - enable_err_irq: 'false'
+      - interrupt_err:
+        - IRQn: 'UART0_ERR_IRQn'
+        - enable_priority: 'false'
+        - priority: '0'
+        - enable_custom_name: 'false'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+const uart_config_t UART0_config = {
+  .baudRate_Bps = 115200,
+  .parityMode = kUART_ParityDisabled,
+  .txFifoWatermark = 0,
+  .rxFifoWatermark = 1,
+  .enableTx = true,
+  .enableRx = true
+};
+
+void UART0_init(void) {
+  UART_Init(UART0_PERIPHERAL, &UART0_config, UART0_CLOCK_SOURCE);
+  UART_EnableInterrupts(UART0_PERIPHERAL, kUART_RxDataRegFullInterruptEnable | kUART_RxOverrunInterruptEnable);
+  /* Interrupt vector UART0_RX_TX_IRQn priority settings in the NVIC */
+  NVIC_SetPriority(UART0_SERIAL_RX_TX_IRQN, UART0_SERIAL_RX_TX_IRQ_PRIORITY);
+  /* Enable interrupt UART0_RX_TX_IRQn request in the NVIC */
+  EnableIRQ(UART0_SERIAL_RX_TX_IRQN);
+}
+
+/***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/
 void BOARD_InitPeripherals(void)
@@ -246,8 +246,8 @@ void BOARD_InitPeripherals(void)
   /* Initialize components */
   FTM0_init();
   GPIOA_init();
-  UART3_init();
   UART5_init();
+  UART0_init();
 }
 
 /***********************************************************************************************************************

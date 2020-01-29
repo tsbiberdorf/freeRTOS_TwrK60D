@@ -45,7 +45,7 @@
                         <data>true</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="Peripheral" resourceId="UART3" description="Peripheral UART3 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
+                  <dependency resourceType="Peripheral" resourceId="UART0" description="Peripheral UART0 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
                      </feature>
@@ -69,8 +69,8 @@
                <pins>
                   <pin peripheral="UART5" signal="TX" pin_num="F3" pin_signal="PTE8/I2S0_RXD1/UART5_TX/I2S0_RX_FS"/>
                   <pin peripheral="UART5" signal="RX" pin_num="F2" pin_signal="PTE9/I2S0_TXD1/UART5_RX/I2S0_RX_BCLK"/>
-                  <pin peripheral="UART3" signal="TX" pin_num="E11" pin_signal="ADC1_SE15/PTB11/SPI1_SCK/UART3_TX/FB_AD18/FTM0_FLT2"/>
-                  <pin peripheral="UART3" signal="RX" pin_num="E12" pin_signal="ADC1_SE14/PTB10/SPI1_PCS0/UART3_RX/FB_AD19/FTM0_FLT1"/>
+                  <pin peripheral="UART0" signal="TX" pin_num="E9" pin_signal="TSI0_CH10/PTB17/SPI1_SIN/UART0_TX/FB_AD16/EWM_OUT_b"/>
+                  <pin peripheral="UART0" signal="RX" pin_num="E10" pin_signal="TSI0_CH9/PTB16/SPI1_SOUT/UART0_RX/FB_AD17/EWM_IN"/>
                   <pin peripheral="FTM0" signal="CH, 0" pin_num="B11" pin_signal="ADC0_SE15/TSI0_CH14/PTC1/LLWU_P6/SPI0_PCS3/UART1_RTS_b/FTM0_CH0/FB_AD13/I2S0_TXD0">
                      <pin_features>
                         <pin_feature name="direction" value="OUTPUT"/>
@@ -261,27 +261,27 @@
                         <data type="Frequency" unit="Hz">0</data>
                      </feature>
                   </dependency>
-                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="UART3.uart_tx" description="Signal TX of the peripheral UART3 is not routed. Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="routed" evaluation="equal">
-                        <data type="Boolean">true</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="UART3.uart_rx" description="Signal RX of the peripheral UART3 is not routed. Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="routed" evaluation="equal">
-                        <data type="Boolean">true</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="ClockOutput" resourceId="Bus_clock" description="Bus clock is inactive. Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="frequency" evaluation="greaterThan">
-                        <data type="Frequency" unit="Hz">0</data>
-                     </feature>
-                  </dependency>
                   <dependency resourceType="PeripheralUnifiedSignal" resourceId="UART5.uart_tx" description="Signal TX of the peripheral UART5 is not routed. Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
                      <feature name="routed" evaluation="equal">
                         <data type="Boolean">true</data>
                      </feature>
                   </dependency>
                   <dependency resourceType="PeripheralUnifiedSignal" resourceId="UART5.uart_rx" description="Signal RX of the peripheral UART5 is not routed. Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="ClockOutput" resourceId="System_clock" description="System clock is inactive. Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="frequency" evaluation="greaterThan">
+                        <data type="Frequency" unit="Hz">0</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="UART0.uart_tx" description="Signal TX of the peripheral UART0 is not routed. Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="equal">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="UART0.uart_rx" description="Signal RX of the peripheral UART0 is not routed. Problem must be resolved in another tool." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
                      <feature name="routed" evaluation="equal">
                         <data type="Boolean">true</data>
                      </feature>
@@ -393,7 +393,7 @@
                         </struct>
                      </config_set>
                   </instance>
-                  <instance name="UART3" uuid="6e87435e-250a-4d2c-bb2c-8c3d301cb373" type="uart" type_id="uart_c6ca9befff8c3e28c85e70f512c4576e" mode="interrupts" peripheral="UART3" enabled="true" comment="" custom_name_enabled="false">
+                  <instance name="UART3" uuid="6e87435e-250a-4d2c-bb2c-8c3d301cb373" type="uart" type_id="uart_c6ca9befff8c3e28c85e70f512c4576e" mode="interrupts" peripheral="UART3" enabled="false" comment="" custom_name_enabled="false">
                      <config_set name="uartConfig_t" quick_selection="QuickSelection1">
                         <struct name="uartConfig">
                            <setting name="clockSource" value="BusInterfaceClock"/>
@@ -445,6 +445,44 @@
                         </struct>
                      </config_set>
                   </instance>
+                  <instance name="UART0" uuid="bafe02f6-4d86-4116-b71e-7c92593b5662" type="uart" type_id="uart_c6ca9befff8c3e28c85e70f512c4576e" mode="interrupts" peripheral="UART0" enabled="true" comment="" custom_name_enabled="false">
+                     <config_set name="uartConfig_t" quick_selection="QuickSelection1">
+                        <struct name="uartConfig">
+                           <setting name="clockSource" value="BusInterfaceClock"/>
+                           <setting name="clockSourceFreq" value="GetFreq"/>
+                           <setting name="baudRate_Bps" value="115200"/>
+                           <setting name="parityMode" value="kUART_ParityDisabled"/>
+                           <setting name="txFifoWatermark" value="0"/>
+                           <setting name="rxFifoWatermark" value="1"/>
+                           <setting name="enableTx" value="true"/>
+                           <setting name="enableRx" value="true"/>
+                        </struct>
+                     </config_set>
+                     <config_set name="interruptsCfg">
+                        <set name="interrupts">
+                           <selected>
+                              <id>kUART_RxDataRegFullInterruptEnable</id>
+                              <id>kUART_RxOverrunInterruptEnable</id>
+                           </selected>
+                        </set>
+                        <struct name="interrupt_vectors">
+                           <setting name="enable_rx_tx_irq" value="true"/>
+                           <struct name="interrupt_rx_tx">
+                              <setting name="IRQn" value="UART0_RX_TX_IRQn"/>
+                              <setting name="enable_priority" value="true"/>
+                              <setting name="priority" value="5"/>
+                              <setting name="enable_custom_name" value="false"/>
+                           </struct>
+                           <setting name="enable_err_irq" value="false"/>
+                           <struct name="interrupt_err">
+                              <setting name="IRQn" value="UART0_ERR_IRQn"/>
+                              <setting name="enable_priority" value="false"/>
+                              <setting name="priority" value="0"/>
+                              <setting name="enable_custom_name" value="false"/>
+                           </struct>
+                        </struct>
+                     </config_set>
+                  </instance>
                </instances>
             </functional_group>
          </functional_groups>
@@ -452,7 +490,7 @@
             <component name="system" uuid="cbc96785-8e9b-4a85-a4b6-a5c7d9e6db6d" type_id="system_54b53072540eeeb8f8e9343e71f28176">
                <config_set_global name="global_system_definitions"/>
             </component>
-            <component name="msg" uuid="998e4a64-fe17-4e7f-9f07-c437aad4b753" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
+            <component name="msg" uuid="750a6643-89c3-4ace-9a96-d56759f2a6df" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
                <config_set_global name="global_messages"/>
             </component>
          </components>

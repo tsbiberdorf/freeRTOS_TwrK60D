@@ -46,8 +46,8 @@ BOARD_InitPins:
 - pin_list:
   - {pin_num: F3, peripheral: UART5, signal: TX, pin_signal: PTE8/I2S0_RXD1/UART5_TX/I2S0_RX_FS}
   - {pin_num: F2, peripheral: UART5, signal: RX, pin_signal: PTE9/I2S0_TXD1/UART5_RX/I2S0_RX_BCLK}
-  - {pin_num: E11, peripheral: UART3, signal: TX, pin_signal: ADC1_SE15/PTB11/SPI1_SCK/UART3_TX/FB_AD18/FTM0_FLT2}
-  - {pin_num: E12, peripheral: UART3, signal: RX, pin_signal: ADC1_SE14/PTB10/SPI1_PCS0/UART3_RX/FB_AD19/FTM0_FLT1}
+  - {pin_num: E9, peripheral: UART0, signal: TX, pin_signal: TSI0_CH10/PTB17/SPI1_SIN/UART0_TX/FB_AD16/EWM_OUT_b}
+  - {pin_num: E10, peripheral: UART0, signal: RX, pin_signal: TSI0_CH9/PTB16/SPI1_SOUT/UART0_RX/FB_AD17/EWM_IN}
   - {pin_num: B11, peripheral: FTM0, signal: 'CH, 0', pin_signal: ADC0_SE15/TSI0_CH14/PTC1/LLWU_P6/SPI0_PCS3/UART1_RTS_b/FTM0_CH0/FB_AD13/I2S0_TXD0, direction: OUTPUT,
     drive_strength: high}
   - {pin_num: A12, peripheral: FTM0, signal: 'CH, 1', pin_signal: ADC0_SE4b/CMP1_IN0/TSI0_CH15/PTC2/SPI0_PCS2/UART1_CTS_b/FTM0_CH1/FB_AD12/I2S0_TX_FS, direction: OUTPUT,
@@ -72,11 +72,11 @@ void BOARD_InitPins(void)
     /* Port E Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortE);
 
-    /* PORTB10 (pin E12) is configured as UART3_RX */
-    PORT_SetPinMux(PORTB, 10U, kPORT_MuxAlt3);
+    /* PORTB16 (pin E10) is configured as UART0_RX */
+    PORT_SetPinMux(PORTB, 16U, kPORT_MuxAlt3);
 
-    /* PORTB11 (pin E11) is configured as UART3_TX */
-    PORT_SetPinMux(PORTB, 11U, kPORT_MuxAlt3);
+    /* PORTB17 (pin E9) is configured as UART0_TX */
+    PORT_SetPinMux(PORTB, 17U, kPORT_MuxAlt3);
 
     /* PORTC1 (pin B11) is configured as FTM0_CH0 */
     PORT_SetPinMux(BOARD_INITPINS_HV_PH2_PORT, BOARD_INITPINS_HV_PH2_PIN, kPORT_MuxAlt4);
@@ -116,6 +116,16 @@ void BOARD_InitPins(void)
 
     /* PORTE9 (pin F2) is configured as UART5_RX */
     PORT_SetPinMux(PORTE, 9U, kPORT_MuxAlt3);
+
+    SIM->SOPT5 = ((SIM->SOPT5 &
+                   /* Mask bits to zero which are setting */
+                   (~(SIM_SOPT5_UART0TXSRC_MASK | SIM_SOPT5_UART0RXSRC_MASK)))
+
+                  /* UART 0 transmit data source select: UART0_TX pin. */
+                  | SIM_SOPT5_UART0TXSRC(SOPT5_UART0TXSRC_UART_TX)
+
+                  /* UART 0 receive data source select: UART0_RX pin. */
+                  | SIM_SOPT5_UART0RXSRC(SOPT5_UART0RXSRC_UART_RX));
 }
 /***********************************************************************************************************************
  * EOF

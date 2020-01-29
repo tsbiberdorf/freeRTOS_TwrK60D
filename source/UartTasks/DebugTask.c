@@ -20,11 +20,11 @@
  * Definitions
  ******************************************************************************/
 /* UART instance and clock */
-#define DEBUG_UART UART3
+#define DEBUG_UART UART0
 #define DEBUG_UART_CLKSRC kCLOCK_BusClk
 #define DEBUG_UART_CLK_FREQ CLOCK_GetFreq(kCLOCK_BusClk)
-#define DEBUG_UART_IRQn UART3_RX_TX_IRQn
-#define DEBUG_UART_IRQHANDLER UART3_RX_TX_IRQHandler
+#define DEBUG_UART_IRQn UART0_RX_TX_IRQn
+#define DEBUG_UART_IRQHANDLER UART0_RX_TX_IRQHandler
 #define BOARD_DEBUG_UART_BAUDRATE 115200
 
 /*! @brief Ring buffer size (Unit: Byte). */

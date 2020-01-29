@@ -37,30 +37,30 @@ extern "C" {
 /* Alias for GPIOA peripheral */
 #define GPIOA_GPIO GPIOA
 /* Definition of peripheral ID */
-#define UART3_PERIPHERAL UART3
-/* Definition of the clock source frequency */
-#define UART3_CLOCK_SOURCE CLOCK_GetFreq(UART3_CLK_SRC)
-/* UART3 interrupt vector ID (number). */
-#define UART3_SERIAL_RX_TX_IRQN UART3_RX_TX_IRQn
-/* UART3 interrupt vector priority. */
-#define UART3_SERIAL_RX_TX_IRQ_PRIORITY 4
-/* UART3 interrupt handler identifier. */
-#define UART3_SERIAL_RX_TX_IRQHANDLER UART3_RX_TX_IRQHandler
-/* UART3 interrupt vector ID (number). */
-#define UART3_SERIAL_ERROR_IRQN UART3_ERR_IRQn
-/* UART3 interrupt handler identifier. */
-#define UART3_SERIAL_ERROR_IRQHANDLER UART3_ERR_IRQHandler
-/* Definition of peripheral ID */
 #define UART5_PERIPHERAL UART5
 /* Definition of the clock source frequency */
 #define UART5_CLOCK_SOURCE CLOCK_GetFreq(UART5_CLK_SRC)
+/* Definition of peripheral ID */
+#define UART0_PERIPHERAL UART0
+/* Definition of the clock source frequency */
+#define UART0_CLOCK_SOURCE CLOCK_GetFreq(UART0_CLK_SRC)
+/* UART0 interrupt vector ID (number). */
+#define UART0_SERIAL_RX_TX_IRQN UART0_RX_TX_IRQn
+/* UART0 interrupt vector priority. */
+#define UART0_SERIAL_RX_TX_IRQ_PRIORITY 5
+/* UART0 interrupt handler identifier. */
+#define UART0_SERIAL_RX_TX_IRQHANDLER UART0_RX_TX_IRQHandler
+/* UART0 interrupt vector ID (number). */
+#define UART0_SERIAL_ERROR_IRQN UART0_ERR_IRQn
+/* UART0 interrupt handler identifier. */
+#define UART0_SERIAL_ERROR_IRQHANDLER UART0_ERR_IRQHandler
 
 /***********************************************************************************************************************
  * Global variables
  **********************************************************************************************************************/
 extern const ftm_config_t FTM0_config;
-extern const uart_config_t UART3_config;
 extern const uart_config_t UART5_config;
+extern const uart_config_t UART0_config;
 
 /***********************************************************************************************************************
  * Initialization functions

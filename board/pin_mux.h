@@ -25,6 +25,9 @@ extern "C" {
  */
 void BOARD_InitBootPins(void);
 
+#define SOPT5_UART0RXSRC_UART_RX 0x00u /*!<@brief UART 0 receive data source select: UART0_RX pin */
+#define SOPT5_UART0TXSRC_UART_TX 0x00u /*!<@brief UART 0 transmit data source select: UART0_TX pin */
+
 /*! @name PORTC1 (coord B11), HV_PH2
   @{ */
 #define BOARD_INITPINS_HV_PH2_PORT PORTC /*!<@brief PORT device name: PORTC */

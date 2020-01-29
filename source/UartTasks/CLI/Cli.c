@@ -249,6 +249,23 @@ s_cliCommandOptions_t ledOptions[]= {
 		{"-h",2,ledHelpCmd},{"-?",2,ledHelpCmd},{NULL,0,ledHelpCmd}
 };
 
+const char *pwmCmdText[] = {
+		"pwm help commands:\r\n",
+		"-c [0/1] [duty cycle] [dead time]\r\n",
+		"\0"
+};
+
+static int32_t pwmHelpCmd(char *Param)
+{
+	uint16_t helpIdx=0;
+
+	while(pwmCmdText[helpIdx][0])
+	{
+		DebugTaskWrite(pwmCmdText[helpIdx],strlen(pwmCmdText[helpIdx]));
+		helpIdx++;
+	}
+	return 0;
+}
 /**
  * To change the percent of pwm active for the assigned channel
  */
@@ -298,6 +315,7 @@ static int32_t pwmChannelSetting(char *Param)
  */
 s_cliCommandOptions_t pwmOptions[]= {
 		{"-c",2,pwmChannelSetting},
+		{"-h",2,pwmHelpCmd},{"-?",2,pwmHelpCmd},{NULL,0,pwmHelpCmd}
 };
 
 s_cliCommands_t userCmds[]= {
