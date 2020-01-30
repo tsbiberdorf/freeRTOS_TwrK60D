@@ -276,7 +276,7 @@ static int32_t pwmChannelSetting(char *Param)
 		uint32_t pwmBits;
 		uint8_t pwmBytes[4];
 	} pwmTaskData;
-	uint32_t channel,value,deadtime;
+	uint32_t channel,value,deadtime,freqKhz;
 	uint8_t *ptrValue;
 	PRINTF("pwm ch: ");
 
@@ -287,6 +287,7 @@ static int32_t pwmChannelSetting(char *Param)
 		{
 			ptrValue = ParseDecimal((uint8_t *)ptrValue,&value);
 			ptrValue = ParseDecimal((uint8_t *)ptrValue,&deadtime);
+			ptrValue = ParseDecimal((uint8_t *)ptrValue,&freqKhz);
 			if(value > 100)
 			{
 				value = 100;
@@ -294,6 +295,7 @@ static int32_t pwmChannelSetting(char *Param)
 			pwmTaskData.pwmBytes[0] = (uint8_t)channel;
 			pwmTaskData.pwmBytes[1] = (uint8_t)value;
 			pwmTaskData.pwmBytes[2] = (uint8_t)deadtime;
+			pwmTaskData.pwmBytes[3] = (uint8_t)freqKhz;
 			xTaskNotify(GetFtm0TaskHandle(),pwmTaskData.pwmBits,eSetBits);
 			PRINTF("%d %d %d\r\n",channel,value,deadtime);
 		}
@@ -301,6 +303,7 @@ static int32_t pwmChannelSetting(char *Param)
 		{
 			ptrValue = ParseDecimal((uint8_t *)ptrValue,&value);
 			ptrValue = ParseDecimal((uint8_t *)ptrValue,&deadtime);
+			ptrValue = ParseDecimal((uint8_t *)ptrValue,&freqKhz);
 			if(value > 100)
 			{
 				value = 100;
@@ -308,6 +311,7 @@ static int32_t pwmChannelSetting(char *Param)
 			pwmTaskData.pwmBytes[0] = (uint8_t)channel;
 			pwmTaskData.pwmBytes[1] = (uint8_t)value;
 			pwmTaskData.pwmBytes[2] = (uint8_t)deadtime;
+			pwmTaskData.pwmBytes[3] = (uint8_t)freqKhz;
 			xTaskNotify(GetFtm0TaskHandle(),pwmTaskData.pwmBits,eSetBits);
 			PRINTF("%d %d %d\r\n",channel,value,deadtime);
 		}

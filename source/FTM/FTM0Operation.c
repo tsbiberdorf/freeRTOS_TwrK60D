@@ -78,7 +78,7 @@ void Ftm0Task(void *pvParameters)
 	BaseType_t xResult;
 	uint8_t changeFlag = 0;
 	uint32_t deadTimeDelay = 0;
-
+volatile uint32_t frequencyPWM = 16000;
 	ftm_pwm_mode_t alignment = kFTM_CombinedPwm;
     ftm_pwm_level_select_t pwmLevel = kFTM_LowTrue;
     ftm_chnl_pwm_signal_param_t ftmParam[4];
@@ -115,7 +115,8 @@ void Ftm0Task(void *pvParameters)
 
     PRINTF("ftm0 task started\r\n");
 	FTM_DisableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
-    FTM_SetupPwm(BOARD_FTM_BASEADDR, &(ftmParam[0]), 4U, kFTM_CombinedPwm, 24000U, FTM_SOURCE_CLOCK);
+    FTM_SetupPwm(BOARD_FTM_BASEADDR, &(ftmParam[0]), 1U, kFTM_CombinedPwm, frequencyPWM, FTM_SOURCE_CLOCK);
+    FTM_SetupPwm(BOARD_FTM_BASEADDR, &(ftmParam[2]), 1U, kFTM_EdgeAlignedPwm, frequencyPWM, FTM_SOURCE_CLOCK);
 
 //    FTM_SetupPwm(BOARD_FTM_BASEADDR, &ftmParam, 1U, kFTM_CenterAlignedPwm, 24000U, FTM_SOURCE_CLOCK);
 
@@ -130,8 +131,8 @@ void Ftm0Task(void *pvParameters)
     BOARD_FTM_BASEADDR->COMBINE |= (FTM_COMBINE_COMBINE0_MASK|FTM_COMBINE_COMP0_MASK
     		|FTM_COMBINE_SYNCEN0_MASK|FTM_COMBINE_DTEN0_MASK);
 
-    BOARD_FTM_BASEADDR->COMBINE |= (FTM_COMBINE_COMBINE1_MASK|FTM_COMBINE_COMP1_MASK
-    		|FTM_COMBINE_SYNCEN1_MASK|FTM_COMBINE_DTEN1_MASK);
+//    BOARD_FTM_BASEADDR->COMBINE |= (FTM_COMBINE_COMBINE1_MASK|FTM_COMBINE_COMP1_MASK
+//    		|FTM_COMBINE_SYNCEN1_MASK|FTM_COMBINE_DTEN1_MASK);
     /*
      * deadtime is configured with a pre-scaler and value
      */
@@ -185,20 +186,31 @@ void Ftm0Task(void *pvParameters)
 
 		if( xResult == pdPASS )
 		{
-			SEGGER_RTT_printf(0,"pwm bits ch:%d dc:%d dt:%d\r\n",
+			SEGGER_RTT_printf(0,"pwm bits ch:%d dc:%d dt:%d fr:%d\r\n",
 					notifyData.notityBytes[0],
 					notifyData.notityBytes[1],
-					notifyData.notityBytes[2]);
+					notifyData.notityBytes[2],
+					notifyData.notityBytes[3]*1000);
 			switch(notifyData.notityBytes[0])
 			{
 			case 0:
 				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, 0U);
-//				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH1, alignment, notifyData.notityBytes[1]);
-				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH2, alignment, notifyData.notityBytes[1]);
+			    FTM_SetupPwm(BOARD_FTM_BASEADDR, &(ftmParam[0])
+			    		, 1U
+						, kFTM_CombinedPwm
+						, notifyData.notityBytes[3]*1000
+						, FTM_SOURCE_CLOCK);
+			    FTM_SetupPwm(BOARD_FTM_BASEADDR, &(ftmParam[2])
+			    		, 1U
+						, kFTM_EdgeAlignedPwm
+						, notifyData.notityBytes[3]*1000
+						, FTM_SOURCE_CLOCK);
 				FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
 				deadTimeDelay = notifyData.notityBytes[2];
 				BOARD_FTM_BASEADDR->DEADTIME = deadTimeDelay;
-//				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, pwmLevel);
+				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH2, alignment, notifyData.notityBytes[1]);
+
+				//				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, pwmLevel);
 				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, pwmLevel);
 				break;
 			case 1:
