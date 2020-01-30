@@ -222,24 +222,6 @@ volatile uint32_t frequencyPWM = 16000;
 			}
 		}
 
-		{
-			if( changeFlag )
-			{
-				changeFlag = 0;
-				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, BOARD_FTM_CHANNEL, 0U);
-
-				/* Update PWM duty cycle */
-				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, BOARD_FTM_CHANNEL, kFTM_CenterAlignedPwm, updatedDutycycle);
-
-				/* Software trigger to update registers */
-				FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
-
-				/* Start channel output with updated dutycycle */
-				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, BOARD_FTM_CHANNEL, pwmLevel);
-			}
-			vTaskDelay(100);
-		}
-
 	}
 }
 
