@@ -215,7 +215,7 @@ volatile uint32_t frequencyPWM = 16000;
 				break;
 			case 1:
 				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_ENABLE, 0U);
-				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_ENABLE, alignment, notifyData.notityBytes[1]);
+				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_ENABLE, kFTM_EdgeAlignedPwm, notifyData.notityBytes[1]);
 				FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
 				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_ENABLE, pwmLevel);
 				break;
