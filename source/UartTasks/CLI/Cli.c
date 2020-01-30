@@ -23,7 +23,7 @@
 static uint8_t tl_cliData[CLI_BUFFER_SIZE];
 static uint16_t tl_cliIdx = 0;
 
-extern TaskHandle_t GetFtm2TaskHandle();
+extern TaskHandle_t GetFtm0TaskHandle();
 
 /*
  * parse InputStr for decimal value.
@@ -284,6 +284,20 @@ static int32_t pwmChannelSetting(char *Param)
 	if( ptrValue )
 	{
 		if(channel == 0 )
+		{
+			ptrValue = ParseDecimal((uint8_t *)ptrValue,&value);
+			ptrValue = ParseDecimal((uint8_t *)ptrValue,&deadtime);
+			if(value > 100)
+			{
+				value = 100;
+			}
+			pwmTaskData.pwmBytes[0] = (uint8_t)channel;
+			pwmTaskData.pwmBytes[1] = (uint8_t)value;
+			pwmTaskData.pwmBytes[2] = (uint8_t)deadtime;
+			xTaskNotify(GetFtm0TaskHandle(),pwmTaskData.pwmBits,eSetBits);
+			PRINTF("%d %d %d\r\n",channel,value,deadtime);
+		}
+		else if(channel == 1 )
 		{
 			ptrValue = ParseDecimal((uint8_t *)ptrValue,&value);
 			ptrValue = ParseDecimal((uint8_t *)ptrValue,&deadtime);
