@@ -139,46 +139,6 @@ void GPIOA_init(void) {
 }
 
 /***********************************************************************************************************************
- * UART5 initialization code
- **********************************************************************************************************************/
-/* clang-format off */
-/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-instance:
-- name: 'UART5'
-- type: 'uart'
-- mode: 'polling'
-- custom_name_enabled: 'false'
-- type_id: 'uart_c6ca9befff8c3e28c85e70f512c4576e'
-- functional_group: 'BOARD_InitPeripherals'
-- peripheral: 'UART5'
-- config_sets:
-  - uartConfig_t:
-    - uartConfig:
-      - clockSource: 'BusInterfaceClock'
-      - clockSourceFreq: 'GetFreq'
-      - baudRate_Bps: '115200'
-      - parityMode: 'kUART_ParityDisabled'
-      - txFifoWatermark: '0'
-      - rxFifoWatermark: '1'
-      - enableTx: 'true'
-      - enableRx: 'true'
-    - quick_selection: 'QuickSelection1'
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
-/* clang-format on */
-const uart_config_t UART5_config = {
-  .baudRate_Bps = 115200,
-  .parityMode = kUART_ParityDisabled,
-  .txFifoWatermark = 0,
-  .rxFifoWatermark = 1,
-  .enableTx = true,
-  .enableRx = true
-};
-
-void UART5_init(void) {
-  UART_Init(UART5_PERIPHERAL, &UART5_config, UART5_CLOCK_SOURCE);
-}
-
-/***********************************************************************************************************************
  * UART0 initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -239,6 +199,46 @@ void UART0_init(void) {
 }
 
 /***********************************************************************************************************************
+ * UART5 initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'UART5'
+- type: 'uart'
+- mode: 'polling'
+- custom_name_enabled: 'false'
+- type_id: 'uart_c6ca9befff8c3e28c85e70f512c4576e'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'UART5'
+- config_sets:
+  - uartConfig_t:
+    - uartConfig:
+      - clockSource: 'BusInterfaceClock'
+      - clockSourceFreq: 'GetFreq'
+      - baudRate_Bps: '115200'
+      - parityMode: 'kUART_ParityDisabled'
+      - txFifoWatermark: '0'
+      - rxFifoWatermark: '1'
+      - enableTx: 'true'
+      - enableRx: 'true'
+    - quick_selection: 'QuickSelection1'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+const uart_config_t UART5_config = {
+  .baudRate_Bps = 115200,
+  .parityMode = kUART_ParityDisabled,
+  .txFifoWatermark = 0,
+  .rxFifoWatermark = 1,
+  .enableTx = true,
+  .enableRx = true
+};
+
+void UART5_init(void) {
+  UART_Init(UART5_PERIPHERAL, &UART5_config, UART5_CLOCK_SOURCE);
+}
+
+/***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/
 void BOARD_InitPeripherals(void)
@@ -246,8 +246,8 @@ void BOARD_InitPeripherals(void)
   /* Initialize components */
   FTM0_init();
   GPIOA_init();
-  UART5_init();
   UART0_init();
+  UART5_init();
 }
 
 /***********************************************************************************************************************

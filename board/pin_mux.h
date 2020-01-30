@@ -46,6 +46,12 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_HV_ENABLE_PIN 3U     /*!<@brief PORTC pin index: 3 */
                                             /* @} */
 
+/*! @name PORTC4 (coord A9), ch3
+  @{ */
+#define BOARD_INITPINS_ch3_PORT PORTC /*!<@brief PORT device name: PORTC */
+#define BOARD_INITPINS_ch3_PIN 4U     /*!<@brief PORTC pin index: 4 */
+                                      /* @} */
+
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *

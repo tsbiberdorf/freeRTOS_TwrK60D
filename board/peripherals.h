@@ -37,10 +37,6 @@ extern "C" {
 /* Alias for GPIOA peripheral */
 #define GPIOA_GPIO GPIOA
 /* Definition of peripheral ID */
-#define UART5_PERIPHERAL UART5
-/* Definition of the clock source frequency */
-#define UART5_CLOCK_SOURCE CLOCK_GetFreq(UART5_CLK_SRC)
-/* Definition of peripheral ID */
 #define UART0_PERIPHERAL UART0
 /* Definition of the clock source frequency */
 #define UART0_CLOCK_SOURCE CLOCK_GetFreq(UART0_CLK_SRC)
@@ -54,13 +50,17 @@ extern "C" {
 #define UART0_SERIAL_ERROR_IRQN UART0_ERR_IRQn
 /* UART0 interrupt handler identifier. */
 #define UART0_SERIAL_ERROR_IRQHANDLER UART0_ERR_IRQHandler
+/* Definition of peripheral ID */
+#define UART5_PERIPHERAL UART5
+/* Definition of the clock source frequency */
+#define UART5_CLOCK_SOURCE CLOCK_GetFreq(UART5_CLK_SRC)
 
 /***********************************************************************************************************************
  * Global variables
  **********************************************************************************************************************/
 extern const ftm_config_t FTM0_config;
-extern const uart_config_t UART5_config;
 extern const uart_config_t UART0_config;
+extern const uart_config_t UART5_config;
 
 /***********************************************************************************************************************
  * Initialization functions

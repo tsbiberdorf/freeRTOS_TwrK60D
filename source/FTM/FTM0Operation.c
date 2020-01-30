@@ -80,7 +80,7 @@ void Ftm0Task(void *pvParameters)
 
 	ftm_pwm_mode_t alignment = kFTM_CombinedPwm;
     ftm_pwm_level_select_t pwmLevel = kFTM_LowTrue;
-    ftm_chnl_pwm_signal_param_t ftmParam;
+    ftm_chnl_pwm_signal_param_t ftmParam[4];
 	union _Long_Char_Join
 	{
 		uint32_t notifyBits;
@@ -92,16 +92,29 @@ void Ftm0Task(void *pvParameters)
     ftm_chnl_t pwmHV_ENABLE = kFTM_Chnl_2;
 
     /* Configure ftm params with frequency 24kHZ */
-    ftmParam.chnlNumber = pwmHV_PH2;
-    ftmParam.level = pwmLevel;
-    ftmParam.dutyCyclePercent = updatedDutycycle;
-    ftmParam.firstEdgeDelayPercent = 0U;
+    ftmParam[0].chnlNumber = kFTM_Chnl_0;
+    ftmParam[0].level = kFTM_LowTrue;
+    ftmParam[0].dutyCyclePercent = 50;
+    ftmParam[0].firstEdgeDelayPercent = 0U;
+
+    ftmParam[1].chnlNumber = kFTM_Chnl_1;
+    ftmParam[1].level = kFTM_LowTrue;
+    ftmParam[1].dutyCyclePercent = 50;
+    ftmParam[1].firstEdgeDelayPercent = 0U;
+
+    ftmParam[2].chnlNumber = kFTM_Chnl_2;
+    ftmParam[2].level = kFTM_LowTrue;
+    ftmParam[2].dutyCyclePercent = 50;
+    ftmParam[2].firstEdgeDelayPercent = 0U;
+
+    ftmParam[3].chnlNumber = kFTM_Chnl_3;
+    ftmParam[3].level = kFTM_LowTrue;
+    ftmParam[3].dutyCyclePercent = 50;
+    ftmParam[3].firstEdgeDelayPercent = 0U;
 
     PRINTF("ftm0 task started\r\n");
 	FTM_DisableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
-    FTM_SetupPwm(BOARD_FTM_BASEADDR, &ftmParam, 1U, kFTM_CombinedPwm, 24000U, FTM_SOURCE_CLOCK);
-
-    ftmParam.chnlNumber = kFTM_Chnl_2;
+    FTM_SetupPwm(BOARD_FTM_BASEADDR, &(ftmParam[0]), 4U, kFTM_CombinedPwm, 24000U, FTM_SOURCE_CLOCK);
 
 //    FTM_SetupPwm(BOARD_FTM_BASEADDR, &ftmParam, 1U, kFTM_CenterAlignedPwm, 24000U, FTM_SOURCE_CLOCK);
 
@@ -116,25 +129,36 @@ void Ftm0Task(void *pvParameters)
     BOARD_FTM_BASEADDR->COMBINE |= (FTM_COMBINE_COMBINE0_MASK|FTM_COMBINE_COMP0_MASK
     		|FTM_COMBINE_SYNCEN0_MASK|FTM_COMBINE_DTEN0_MASK);
 
+    BOARD_FTM_BASEADDR->COMBINE |= (FTM_COMBINE_COMBINE1_MASK|FTM_COMBINE_COMP1_MASK
+    		|FTM_COMBINE_SYNCEN1_MASK|FTM_COMBINE_DTEN1_MASK);
     /*
      * deadtime is configured with a pre-scaler and value
      */
     deadTimeDelay = 0;
 
-	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, 0U);
+    /* Software trigger to update registers */
+	FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
+
+//	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, kFTM_Chnl_0, 0U);
+//	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, kFTM_Chnl_0, kFTM_CombinedPwm, 50);
+//	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, kFTM_Chnl_0, kFTM_LowTrue);
+//
+//	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, kFTM_Chnl_2, 0U);
+//	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, kFTM_Chnl_2, kFTM_CombinedPwm, 50);
+//	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, kFTM_Chnl_2, kFTM_LowTrue);
+
+//	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, 0U);
 //	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, 0U);
 //	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_ENABLE, 0U);
 
 	/* Update PWM duty cycle */
-	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH2, alignment, updatedDutycycle);
+//	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH2, alignment, updatedDutycycle);
 //	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH1, alignment, updatedDutycycle);
 //	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_ENABLE, alignment, updatedDutycycle);
 
-	/* Software trigger to update registers */
-	FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
 
 	/* Start channel output with updated dutycycle */
-	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, pwmLevel);
+//	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, pwmLevel);
 //	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, pwmLevel);
 
 
