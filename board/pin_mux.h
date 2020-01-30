@@ -40,16 +40,16 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_HV_PH1_PIN 2U     /*!<@brief PORTC pin index: 2 */
                                          /* @} */
 
-/*! @name PORTC3 (coord A11), HV_ENABLE
+/*! @name PORTC3 (coord A11), ch2
   @{ */
-#define BOARD_INITPINS_HV_ENABLE_PORT PORTC /*!<@brief PORT device name: PORTC */
-#define BOARD_INITPINS_HV_ENABLE_PIN 3U     /*!<@brief PORTC pin index: 3 */
-                                            /* @} */
+#define BOARD_INITPINS_ch2_PORT PORTC /*!<@brief PORT device name: PORTC */
+#define BOARD_INITPINS_ch2_PIN 3U     /*!<@brief PORTC pin index: 3 */
+                                      /* @} */
 
-/*! @name PORTC4 (coord A9), ch3
+/*! @name PORTA6 (coord J7), ch3
   @{ */
-#define BOARD_INITPINS_ch3_PORT PORTC /*!<@brief PORT device name: PORTC */
-#define BOARD_INITPINS_ch3_PIN 4U     /*!<@brief PORTC pin index: 4 */
+#define BOARD_INITPINS_ch3_PORT PORTA /*!<@brief PORT device name: PORTA */
+#define BOARD_INITPINS_ch3_PIN 6U     /*!<@brief PORTA pin index: 6 */
                                       /* @} */
 
 /*!

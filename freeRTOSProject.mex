@@ -28,8 +28,10 @@
                <pin_label pin_num="L9" pin_signal="PTA11/FTM2_CH1/MII0_RXCLK/FTM2_QD_PHB" label="PWM_2ch1" identifier="PWM_2ch1"/>
                <pin_label pin_num="B11" pin_signal="ADC0_SE15/TSI0_CH14/PTC1/LLWU_P6/SPI0_PCS3/UART1_RTS_b/FTM0_CH0/FB_AD13/I2S0_TXD0" label="HV_PH2" identifier="HV_PH2"/>
                <pin_label pin_num="A12" pin_signal="ADC0_SE4b/CMP1_IN0/TSI0_CH15/PTC2/SPI0_PCS2/UART1_CTS_b/FTM0_CH1/FB_AD12/I2S0_TX_FS" label="HV_PH1" identifier="HV_PH1"/>
-               <pin_label pin_num="A11" pin_signal="CMP1_IN1/PTC3/LLWU_P7/SPI0_PCS1/UART1_RX/FTM0_CH2/CLKOUT/I2S0_TX_BCLK" label="HV_ENABLE" identifier="HV_ENABLE"/>
-               <pin_label pin_num="A9" pin_signal="PTC4/LLWU_P8/SPI0_PCS0/UART1_TX/FTM0_CH3/FB_AD11/CMP1_OUT" label="ch3" identifier="ch3"/>
+               <pin_label pin_num="A11" pin_signal="CMP1_IN1/PTC3/LLWU_P7/SPI0_PCS1/UART1_RX/FTM0_CH2/CLKOUT/I2S0_TX_BCLK" label="ch2" identifier="HV_ENABLE;ch3;ch2"/>
+               <pin_label pin_num="A9" pin_signal="PTC4/LLWU_P8/SPI0_PCS0/UART1_TX/FTM0_CH3/FB_AD11/CMP1_OUT" label="ch4" identifier="ch3;ch4"/>
+               <pin_label pin_num="D8" pin_signal="PTC5/LLWU_P9/SPI0_SCK/LPTMR0_ALT2/I2S0_RXD0/FB_AD10/CMP0_OUT" label="ch5" identifier="ch5"/>
+               <pin_label pin_num="J7" pin_signal="PTA6/FTM0_CH3/TRACE_CLKOUT" label="ch3" identifier="ch3"/>
             </pin_labels>
          </pins_profile>
          <functions_list>
@@ -86,11 +88,16 @@
                   </pin>
                   <pin peripheral="FTM0" signal="CH, 2" pin_num="A11" pin_signal="CMP1_IN1/PTC3/LLWU_P7/SPI0_PCS1/UART1_RX/FTM0_CH2/CLKOUT/I2S0_TX_BCLK">
                      <pin_features>
+                        <pin_feature name="identifier" value="ch2"/>
                         <pin_feature name="direction" value="OUTPUT"/>
                         <pin_feature name="drive_strength" value="high"/>
                      </pin_features>
                   </pin>
-                  <pin peripheral="FTM0" signal="CH, 3" pin_num="A9" pin_signal="PTC4/LLWU_P8/SPI0_PCS0/UART1_TX/FTM0_CH3/FB_AD11/CMP1_OUT"/>
+                  <pin peripheral="FTM0" signal="CH, 3" pin_num="J7" pin_signal="PTA6/FTM0_CH3/TRACE_CLKOUT">
+                     <pin_features>
+                        <pin_feature name="direction" value="OUTPUT"/>
+                     </pin_features>
+                  </pin>
                </pins>
             </function>
          </functions_list>

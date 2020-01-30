@@ -14,7 +14,8 @@
 #include "freeRTOSProject.h"
 #include "TaskParameters.h"
 #include "fsl_debug_console.h"
-
+#include "pin_mux.h"
+#include "fsl_gpio.h"
 #include "CMSIS/RTT/SEGGER_RTT.h"
 
 /* The Flextimer instance/channel used for board */
@@ -163,6 +164,17 @@ void Ftm0Task(void *pvParameters)
 
 
     FTM_StartTimer(BOARD_FTM_BASEADDR, kFTM_SystemClock);
+
+
+//    changeFlag = 6;
+//    while(changeFlag--)
+//    {
+//    	GPIO_ClearPinsOutput(BOARD_INITPINS_ch2_GPIO, 1U << BOARD_INITPINS_ch2_PIN);
+//    	GPIO_ClearPinsOutput(BOARD_INITPINS_ch3_GPIO, 1U << BOARD_INITPINS_ch3_PIN);
+//
+//    	GPIO_SetPinsOutput(BOARD_INITPINS_ch2_GPIO, 1U << BOARD_INITPINS_ch2_PIN);
+//    	GPIO_SetPinsOutput(BOARD_INITPINS_ch3_GPIO, 1U << BOARD_INITPINS_ch3_PIN);
+//    }
 
 	while(1)
 	{
