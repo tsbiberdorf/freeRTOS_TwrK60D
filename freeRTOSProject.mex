@@ -304,7 +304,7 @@
                            <setting name="clockSourceFreq" value="GetFreq"/>
                            <setting name="prescale" value="kFTM_Prescale_Divide_1"/>
                            <setting name="timerFrequency" value="10000"/>
-                           <setting name="bdmMode" value="kFTM_BdmMode_3"/>
+                           <setting name="bdmMode" value="kFTM_BdmMode_0"/>
                            <set name="pwmSyncMode">
                               <selected>
                                  <id>kFTM_SoftwareTrigger</id>

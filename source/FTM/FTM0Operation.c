@@ -45,26 +45,6 @@ void FTM_LED_HANDLER(void)
 {
     ftmIsrFlag = true;
 
-    if (brightnessUp)
-    {
-        /* Increase duty cycle until it reach limited value, don't want to go upto 100% duty cycle
-         * as channel interrupt will not be set for 100%
-         */
-        if (++updatedDutycycle >= 99U)
-        {
-            updatedDutycycle = 99U;
-            brightnessUp = false;
-        }
-    }
-    else
-    {
-        /* Decrease duty cycle until it reach limited value */
-        if (--updatedDutycycle == 1U)
-        {
-            brightnessUp = true;
-        }
-    }
-
     if ((FTM_GetStatusFlags(BOARD_FTM_BASEADDR) & FTM_CHANNEL_FLAG) == FTM_CHANNEL_FLAG)
     {
         /* Clear interrupt flag.*/
@@ -82,6 +62,7 @@ volatile uint32_t frequencyPWM = 16000;
 	ftm_pwm_mode_t alignment = kFTM_CombinedPwm;
     ftm_pwm_level_select_t pwmLevel = kFTM_LowTrue;
     ftm_chnl_pwm_signal_param_t ftmParam[4];
+    uint8_t hv_EnableDutyCycle = 50;
 	union _Long_Char_Join
 	{
 		uint32_t notifyBits;
@@ -138,6 +119,7 @@ volatile uint32_t frequencyPWM = 16000;
      */
     deadTimeDelay = 0;
 
+
     /* Software trigger to update registers */
 	FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
 
@@ -156,7 +138,13 @@ volatile uint32_t frequencyPWM = 16000;
 	/* Update PWM duty cycle */
 	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH2, alignment, updatedDutycycle);
 	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH1, alignment, updatedDutycycle);
-	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_ENABLE, alignment, updatedDutycycle);
+	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_ENABLE, kFTM_EdgeAlignedPwm, updatedDutycycle);
+
+    /* Software trigger to update registers */
+	FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
+
+//	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_ENABLE, kFTM_EdgeAlignedPwm, updatedDutycycle);
+
 
 
 	/* Start channel output with updated dutycycle */
@@ -166,6 +154,10 @@ volatile uint32_t frequencyPWM = 16000;
 
 
     FTM_StartTimer(BOARD_FTM_BASEADDR, kFTM_SystemClock);
+    /* Enable interrupt flag to update PWM dutycycle */
+    FTM_EnableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
+
+    EnableIRQ(FTM0_IRQn);
 
 
 //    changeFlag = 6;
@@ -192,9 +184,18 @@ volatile uint32_t frequencyPWM = 16000;
 					notifyData.notityBytes[1],
 					notifyData.notityBytes[2],
 					notifyData.notityBytes[3]*1000);
+            ftmIsrFlag = false;
+
+            // wait for next IRQ to happen
+            while(ftmIsrFlag = false)
+            	;
+            // disable interrupts to make requested updates
+            FTM_DisableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
+
 			FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, 0U);
 			FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, 0U);
 			FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_ENABLE, 0U);
+
 
 			switch(notifyData.notityBytes[0])
 			{
@@ -212,12 +213,13 @@ volatile uint32_t frequencyPWM = 16000;
 				FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
 				deadTimeDelay = notifyData.notityBytes[2];
 				BOARD_FTM_BASEADDR->DEADTIME = deadTimeDelay;
+				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_ENABLE, kFTM_EdgeAlignedPwm, hv_EnableDutyCycle);
 				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH2, alignment, notifyData.notityBytes[1]);
 
-				//				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, pwmLevel);
 				break;
 			case 1:
-				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_ENABLE, kFTM_EdgeAlignedPwm, notifyData.notityBytes[1]);
+				hv_EnableDutyCycle =  notifyData.notityBytes[1];
+				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_ENABLE, kFTM_EdgeAlignedPwm, hv_EnableDutyCycle);
 				FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
 				break;
 			}
@@ -225,6 +227,8 @@ volatile uint32_t frequencyPWM = 16000;
 			FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, pwmLevel);
 			FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, pwmLevel);
 			FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_ENABLE, pwmLevel);
+
+		    FTM_EnableInterrupts(BOARD_FTM_BASEADDR, FTM_CHANNEL_INTERRUPT_ENABLE);
 
 		}
 
