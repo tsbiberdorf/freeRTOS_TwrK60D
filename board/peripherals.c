@@ -61,7 +61,7 @@ instance:
       - clockSourceFreq: 'GetFreq'
       - prescale: 'kFTM_Prescale_Divide_1'
       - timerFrequency: '10000'
-      - bdmMode: 'kFTM_BdmMode_0'
+      - bdmMode: 'kFTM_BdmMode_3'
       - pwmSyncMode: 'kFTM_SoftwareTrigger'
       - reloadPoints: ''
       - faultMode: 'kFTM_Fault_Disable'
@@ -86,7 +86,7 @@ instance:
 /* clang-format on */
 const ftm_config_t FTM0_config = {
   .prescale = kFTM_Prescale_Divide_1,
-  .bdmMode = kFTM_BdmMode_0,
+  .bdmMode = kFTM_BdmMode_3,
   .pwmSyncMode = kFTM_SoftwareTrigger,
   .reloadPoints = 0,
   .faultMode = kFTM_Fault_Disable,

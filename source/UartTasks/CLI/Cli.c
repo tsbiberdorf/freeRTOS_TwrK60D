@@ -297,7 +297,7 @@ static int32_t pwmChannelSetting(char *Param)
 			pwmTaskData.pwmBytes[2] = (uint8_t)deadtime;
 			pwmTaskData.pwmBytes[3] = (uint8_t)freqKhz;
 			xTaskNotify(GetFtm0TaskHandle(),pwmTaskData.pwmBits,eSetBits);
-			PRINTF("%d %d %d\r\n",channel,value,deadtime);
+			PRINTF("%d %d %d %d\r\n",channel,value,deadtime,freqKhz);
 		}
 		else if(channel == 1 )
 		{
@@ -313,7 +313,7 @@ static int32_t pwmChannelSetting(char *Param)
 			pwmTaskData.pwmBytes[2] = (uint8_t)deadtime;
 			pwmTaskData.pwmBytes[3] = (uint8_t)freqKhz;
 			xTaskNotify(GetFtm0TaskHandle(),pwmTaskData.pwmBits,eSetBits);
-			PRINTF("%d %d %d\r\n",channel,value,deadtime);
+			PRINTF("%d %d %d %d\r\n",channel,value,deadtime,freqKhz);
 		}
 		else
 		{
