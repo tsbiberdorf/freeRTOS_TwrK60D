@@ -128,7 +128,7 @@ volatile uint32_t frequencyPWM = 16000;
      * make channels 0/1 a complement of each other
      * enable deadtime on channels 0/1
      */
-    BOARD_FTM_BASEADDR->COMBINE |= (FTM_COMBINE_COMBINE0_MASK|FTM_COMBINE_COMP0_MASK
+    BOARD_FTM_BASEADDR->COMBINE = (FTM_COMBINE_COMBINE0_MASK|FTM_COMBINE_COMP0_MASK
     		|FTM_COMBINE_SYNCEN0_MASK|FTM_COMBINE_DTEN0_MASK);
 
 //    BOARD_FTM_BASEADDR->COMBINE |= (FTM_COMBINE_COMBINE1_MASK|FTM_COMBINE_COMP1_MASK
@@ -149,19 +149,20 @@ volatile uint32_t frequencyPWM = 16000;
 //	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, kFTM_Chnl_2, kFTM_CombinedPwm, 50);
 //	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, kFTM_Chnl_2, kFTM_LowTrue);
 
-//	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, 0U);
-//	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, 0U);
-//	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_ENABLE, 0U);
+	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, 0U);
+	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, 0U);
+	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_ENABLE, 0U);
 
 	/* Update PWM duty cycle */
-//	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH2, alignment, updatedDutycycle);
-//	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH1, alignment, updatedDutycycle);
-//	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_ENABLE, alignment, updatedDutycycle);
+	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH2, alignment, updatedDutycycle);
+	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH1, alignment, updatedDutycycle);
+	FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_ENABLE, alignment, updatedDutycycle);
 
 
 	/* Start channel output with updated dutycycle */
-//	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, pwmLevel);
-//	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, pwmLevel);
+	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, pwmLevel);
+	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, pwmLevel);
+	FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_ENABLE, pwmLevel);
 
 
     FTM_StartTimer(BOARD_FTM_BASEADDR, kFTM_SystemClock);
@@ -191,10 +192,13 @@ volatile uint32_t frequencyPWM = 16000;
 					notifyData.notityBytes[1],
 					notifyData.notityBytes[2],
 					notifyData.notityBytes[3]*1000);
+			FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, 0U);
+			FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, 0U);
+			FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_ENABLE, 0U);
+
 			switch(notifyData.notityBytes[0])
 			{
 			case 0:
-				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, 0U);
 			    FTM_SetupPwm(BOARD_FTM_BASEADDR, &(ftmParam[0])
 			    		, 1U
 						, kFTM_CombinedPwm
@@ -211,15 +215,17 @@ volatile uint32_t frequencyPWM = 16000;
 				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_PH2, alignment, notifyData.notityBytes[1]);
 
 				//				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, pwmLevel);
-				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, pwmLevel);
 				break;
 			case 1:
-				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_ENABLE, 0U);
 				FTM_UpdatePwmDutycycle(BOARD_FTM_BASEADDR, pwmHV_ENABLE, kFTM_EdgeAlignedPwm, notifyData.notityBytes[1]);
 				FTM_SetSoftwareTrigger(BOARD_FTM_BASEADDR, true);
-				FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_ENABLE, pwmLevel);
 				break;
 			}
+
+			FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH2, pwmLevel);
+			FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_PH1, pwmLevel);
+			FTM_UpdateChnlEdgeLevelSelect(BOARD_FTM_BASEADDR, pwmHV_ENABLE, pwmLevel);
+
 		}
 
 	}
