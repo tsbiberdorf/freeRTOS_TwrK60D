@@ -9,6 +9,7 @@ and be able to modify the duty cycle on FTM0 Channel 2
 <li>UART0 RX: B68
 </ul>
 
+## FTM0 connection to Primary Tower"
 <ul>
 <li>FTM0 channel 0 (PTC1) is connected to Primary Tower pin A40
 <li>FTM0 channel 1 (PTC2) is connected to Primary Tower pin A39
