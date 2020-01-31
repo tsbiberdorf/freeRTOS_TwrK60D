@@ -5,8 +5,8 @@ and be able to modify the duty cycle on FTM0 Channel 2
 
 ## UART connection to Primary Tower"
 <ul>
-<li>UART0 TX: B67
-<li>UART0 RX: B68
+<li>UART0 TX is connected to Primary Tower pin B67
+<li>UART0 RX is connected to Primary Tower pin B68
 </ul>
 
 ## FTM0 connection to Primary Tower"
