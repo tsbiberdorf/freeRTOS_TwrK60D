@@ -109,7 +109,7 @@ volatile uint32_t frequencyPWM = 16000;
      * make channels 0/1 a complement of each other
      * enable deadtime on channels 0/1
      */
-    BOARD_FTM_BASEADDR->COMBINE = (FTM_COMBINE_COMBINE0_MASK|FTM_COMBINE_COMP0_MASK
+    BOARD_FTM_BASEADDR->COMBINE |= (FTM_COMBINE_COMBINE0_MASK|FTM_COMBINE_COMP0_MASK
     		|FTM_COMBINE_SYNCEN0_MASK|FTM_COMBINE_DTEN0_MASK);
 
 //    BOARD_FTM_BASEADDR->COMBINE |= (FTM_COMBINE_COMBINE1_MASK|FTM_COMBINE_COMP1_MASK
@@ -118,6 +118,7 @@ volatile uint32_t frequencyPWM = 16000;
      * deadtime is configured with a pre-scaler and value
      */
     deadTimeDelay = 0;
+    FTM_SetDeadTimeEnable(BOARD_FTM_BASEADDR, pwmHV_PH2, true);
 
 
     /* Software trigger to update registers */
