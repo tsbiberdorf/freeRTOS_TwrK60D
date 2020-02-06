@@ -251,7 +251,9 @@ s_cliCommandOptions_t ledOptions[]= {
 
 const char *pwmCmdText[] = {
 		"pwm help commands:\r\n",
-		"-c [0/1] [duty cycle] [dead time]\r\n",
+		"-c [0/1] [duty cycle] [dead time] [freq] \r\n",
+		" freq only changes on channel 0 \r\n",
+		" duty cycle only changes on channel 1\r\n",
 		"\0"
 };
 
